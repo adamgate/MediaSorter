@@ -1,7 +1,7 @@
-﻿namespace ImageSorter.Services.Interfaces
+﻿namespace MediaSorter.Services.Interfaces
 {
     public interface IMetadataProvider
     {
-        IDictionary<string, DateTime?> GetDateTakenMetadata(IEnumerable<string> images);
+        IDictionary<string, string> EvaluateMediaMetadata(IEnumerable<string> media);
     }
 }

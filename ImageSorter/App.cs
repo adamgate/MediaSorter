@@ -1,37 +1,37 @@
-﻿using ImageSorter.Services.Interfaces;
+﻿using MediaSorter.Services.Interfaces;
 
-namespace ImageSorter
+namespace MediaSorter
 {
     /// <summary>
     ///  Entry point for the program.
     /// </summary>
     public class App
     {
-        private readonly IDirectoryProvider _imageDirectoryProvider;
+        private readonly IDirectoryProvider _directoryProvider;
         private readonly IMetadataProvider _metadataProvider;
-        private IFileProcessor _fileProcessor;
+        private IMediaScanner _mediaProcessor;
 
         public App(
-            IDirectoryProvider imageDirectoryProvider,
+            IDirectoryProvider directoryProvider,
             IMetadataProvider metadataProvider,
-            IFileProcessor fileProcessor)
+            IMediaScanner fileProcessor
+        )
         {
-            _imageDirectoryProvider = imageDirectoryProvider;
+            _directoryProvider = directoryProvider;
             _metadataProvider = metadataProvider;
-            _fileProcessor = fileProcessor;
+            _mediaProcessor = fileProcessor;
         }
 
         public int Run(string[] args)
         {
             try
             {
-                // TODO - remove this and actually get info from _imageDirectoryProvider
-                string? workDirectory = @"C:\Users\Adam\Downloads";
-                while (workDirectory is null)
-                    _imageDirectoryProvider.GetValidImageDirectory();
+                string? workDirectory = "";
+                while (string.IsNullOrEmpty(workDirectory))
+                    workDirectory = _directoryProvider.GetValidMediaDirectory();
 
-                var images = _fileProcessor.GetImagesInPath(workDirectory);
-                var imagesWithMetadata = _metadataProvider.GetDateTakenMetadata(images);
+                var mediaPaths = _mediaProcessor.GetMediaInPath(workDirectory);
+                var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
                 // TODO -
                 // _fileUtils.Save();
 

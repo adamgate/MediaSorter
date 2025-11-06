@@ -1,7 +1,7 @@
-﻿namespace ImageSorter.Services.Interfaces
+﻿namespace MediaSorter.Services.Interfaces
 {
     public interface IDirectoryProvider
     {
-        string? GetValidImageDirectory();
+        string? GetValidMediaDirectory();
     }
 }

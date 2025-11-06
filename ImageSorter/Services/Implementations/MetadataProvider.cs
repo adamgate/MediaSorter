@@ -1,79 +1,88 @@
-﻿using ImageSorter.Services.Interfaces;
-using ImageSorter.Utils;
+﻿using MediaSorter.Services.Interfaces;
+using MediaSorter.Utils;
 using MetadataExtractor;
 
-namespace ImageSorter.Services.Implementations
+namespace MediaSorter.Services.Implementations
 {
     public class MetadataProvider : IMetadataProvider
     {
         private record RawMetadata(string Directory, string Name, string Description);
 
-        /// <summary>
-        /// Extacts the date taken metadata from the provided images.
-        /// </summary>
-        /// <param name="images">The image paths.</param>
-        /// <returns></returns>
-        public IDictionary<string, DateTime?> GetDateTakenMetadata(IEnumerable<string> images)
-        {
-            var assortedDateMetadata = GetRawDateMetadata(images);
+        private record WeightedMetadata(
+            string Directory,
+            string Name,
+            string Description,
+            double AccuracyWeight
+        );
 
-            var parsedMetadata = new Dictionary<string, DateTime?>();
-            foreach (var image in images)
+        /// <summary>
+        /// Extacts the date taken metadata from the provided media.
+        /// </summary>
+        /// <param name="mediaPaths">The media paths.</param>
+        /// <returns></returns>
+        public IDictionary<string, string> EvaluateMediaMetadata(IEnumerable<string> mediaPaths)
+        {
+            var assortedDateMetadata = GetRawDateMetadata(mediaPaths);
+
+            var parsedMetadata = new Dictionary<string, string>();
+            foreach (var media in assortedDateMetadata)
             {
-                var dateTaken = DetermineMostAccurateDate(assortedDateMetadata[image]);
-                parsedMetadata.Add(image, dateTaken);
+                var dateTaken = media.Value
+                    .Select(x => new WeightedMetadata(x.Directory, x.Name, x.Description, WeightDates(x)))
+                    .OrderByDescending(x => x.AccuracyWeight)
+                    .First();
+
+                parsedMetadata.Add(media.Key, dateTaken.Description);
             }
 
             return parsedMetadata;
         }
 
-        private DateTime? DetermineMostAccurateDate(List<RawMetadata> imageMetadata)
+        /// <summary>
+        /// Weights the date metadata on how accurate it is likely to be, preferring EXIF metadata.
+        /// </summary>
+        private double WeightDates(RawMetadata rawMetadata)
         {
-            if (!imageMetadata.Any())
-                return null;
+            if (rawMetadata.Directory.Contains("Exif") && rawMetadata.Name.EqualsIgnoreCase("Date/Time Original"))
+                return 0.9;
 
-            // This still doesn't work the way I intend. It will grab the first of ANY of these values that matches
-            // TODO - Figure out how to prioritize certain fields without doing repeated loops
-            foreach (var tag in imageMetadata)
-            {
-                if (tag.Directory.Contains("Exif") && tag.Name.EqualsIgnoreCase("Date/Time Original"))
-                    return DateTime.Parse(tag.Description);
+            if (rawMetadata.Name.EqualsIgnoreCase("GPS Date Stamp"))
+                return 0.8;
 
-                if (tag.Name.EqualsIgnoreCase("GPS Date Stamp"))
-                    return DateTime.Parse(tag.Description);
+            if (rawMetadata.Name.EqualsIgnoreCase("Date/Time Digitized"))
+                return 0.7;
 
-                if (tag.Name.EqualsIgnoreCase("Date/Time Digitized"))
-                    return DateTime.Parse(tag.Description);
+            if (rawMetadata.Name.EqualsIgnoreCase("Date/Time"))
+                return 0.6;
 
-                if (tag.Name.EqualsIgnoreCase("Date/Time"))
-                    return DateTime.Parse(tag.Description);
-            }
+            if (rawMetadata.Name.EqualsIgnoreCase("File Modified Date"))
+                return 0.0;
 
-            return null;
+            return 0.1;
         }
 
-        private IDictionary<string, List<RawMetadata>> GetRawDateMetadata(IEnumerable<string> images)
+        private IDictionary<string, List<RawMetadata>> GetRawDateMetadata(IEnumerable<string> mediaPaths)
         {
-            var aggregatedImageMetdata = new Dictionary<string, List<RawMetadata>>();
+            var mediaWithMetadata = new Dictionary<string, List<RawMetadata>>();
 
-            foreach (var image in images)
+            foreach (var media in mediaPaths)
             {
-                var rawMetadata = ImageMetadataReader.ReadMetadata(image);
+                var rawMetadata = ImageMetadataReader.ReadMetadata(media);
 
-                var imageDateMetadata = new List<RawMetadata>();
+                var mediaDateMetadata = new List<RawMetadata>();
                 foreach (var directory in rawMetadata)
                 {
                     var directoryDateMetadata = directory.Tags
                         .Where(x => x.Name.Contains("Date"))
                         .Select(x => new RawMetadata(x.DirectoryName, x.Name, x.Description ?? ""));
 
-                    imageDateMetadata.AddRange(directoryDateMetadata);
+                    mediaDateMetadata.AddRange(directoryDateMetadata);
                 }
 
-                aggregatedImageMetdata.Add(image, imageDateMetadata);
+                mediaWithMetadata.Add(media, mediaDateMetadata);
             }
 
-            return aggregatedImageMetdata;
+            return mediaWithMetadata;
         }
     }
 }

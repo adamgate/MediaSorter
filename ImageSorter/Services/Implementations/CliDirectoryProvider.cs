@@ -1,10 +1,10 @@
-﻿using ImageSorter.Services.Interfaces;
+﻿using MediaSorter.Services.Interfaces;
 
-namespace ImageSorter.Services.Implementations
+namespace MediaSorter.Services.Implementations
 {
     public class CliDirectoryProvider : IDirectoryProvider
     {
-        public string? GetValidImageDirectory()
+        public string? GetValidMediaDirectory()
         {
             Console.WriteLine("Please enter the path of the folder you wish to sort:");
             var path = Console.ReadLine();

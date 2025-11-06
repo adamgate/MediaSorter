@@ -1,9 +1,9 @@
-﻿using ImageSorter.Services.Implementations;
-using ImageSorter.Services.Interfaces;
+﻿using MediaSorter.Services.Implementations;
+using MediaSorter.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ImageSorter
+namespace MediaSorter
 {
     /// <summary>
     /// Sets up configuration and runs the app.
@@ -15,7 +15,7 @@ namespace ImageSorter
             // Hosting and DI are overkill for this app, but good for practice
             var builder = Host.CreateApplicationBuilder(args);
 
-            builder.Services.AddScoped<IFileProcessor, FileProcessor>();
+            builder.Services.AddScoped<IMediaScanner, MediaScanner>();
             builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
             builder.Services.AddScoped<IDirectoryProvider, CliDirectoryProvider>();
 

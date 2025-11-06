@@ -1,10 +1,11 @@
-﻿namespace ImageSorter.Constants
+﻿namespace MediaSorter.Constants
 {
     public static class Constants
     {
         // TODO - move this in a config file?
-        public static readonly string[] SupportedImageFormats =
+        public static readonly string[] SupportedMediaFormats =
         [
+            // Images
             ".png",
             ".jpg", ".jpeg",
             ".heic",
@@ -15,7 +16,12 @@
             ".gif",
             ".ico",
             ".jfif",
-            ".webp"
+            ".webp",
+            // Video
+            ".avci",
+            ".avi",
+            ".mov",
+            ".mp4"
         ];
     }
 }
