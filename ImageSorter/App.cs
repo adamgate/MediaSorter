@@ -31,7 +31,7 @@ namespace MediaSorter
             {
                 string? readDirectory = "";
                 while (string.IsNullOrEmpty(readDirectory))
-                    readDirectory = _directoryProvider.GetValidMediaDirectory(
+                    readDirectory = _directoryProvider.GetValidDirectory(
                         "Please enter the path of the folder you wish to sort:"
                     );
 
@@ -40,7 +40,7 @@ namespace MediaSorter
 
                 string? writeDirectory = "";
                 while (string.IsNullOrEmpty(readDirectory))
-                    readDirectory = _directoryProvider.GetValidMediaDirectory(
+                    readDirectory = _directoryProvider.GetValidDirectory(
                         "\"Please enter the path of the folder where you wish to save the sorted files:\""
                     );
 

@@ -4,6 +4,9 @@ using MetadataExtractor;
 
 namespace MediaSorter.Services.Implementations
 {
+    /// <summary>
+    /// Extracts the date metadata from provided media files.
+    /// </summary>
     public class MetadataProvider : IMetadataProvider
     {
         private record RawMetadata(string Directory, string Name, string Description);

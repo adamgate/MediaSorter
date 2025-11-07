@@ -2,6 +2,6 @@
 {
     public interface IDirectoryProvider
     {
-        string? GetValidMediaDirectory(string message);
+        string? GetValidDirectory(string message);
     }
 }

@@ -3,8 +3,16 @@ using MediaSorter.Utils;
 
 namespace MediaSorter.Services.Implementations
 {
+    /// <summary>
+    /// Sorts the provided media files.
+    /// </summary>
     public class FileSorter : IFileSorter
     {
+        /// <summary>
+        ///  Attempts to sort media files by their taken date if possible, otherwise by their original name
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="mediaWithMetadata"></param>
         public void SortMediaFilesByDate(string path, IDictionary<string, string> mediaWithMetadata)
         {
             var unknownDirectory = Path.Join(path, "unknown");

@@ -2,9 +2,17 @@
 
 namespace MediaSorter.Services.Implementations
 {
+    /// <summary>
+    /// Provides valid directories through the CLI.
+    /// </summary>
     public class CliDirectoryProvider : IDirectoryProvider
     {
-        public string? GetValidMediaDirectory(string message)
+        /// <summary>
+        /// Attempts to get a valid directory via the CLI.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public string? GetValidDirectory(string message)
         {
             Console.WriteLine(message);
             var path = Console.ReadLine();

@@ -4,7 +4,7 @@ using MediaSorter.Utils;
 namespace MediaSorter.Services.Implementations
 {
     /// <summary>
-    /// Scans for all of the image and video files in the provided directory and children directories.
+    /// Scans for all of the image and video files in the provided directory and its child directories.
     /// </summary>
     public class MediaScanner : IMediaScanner
     {
