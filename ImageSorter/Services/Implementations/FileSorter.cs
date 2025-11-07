@@ -1,4 +1,5 @@
 ﻿using MediaSorter.Services.Interfaces;
+using MediaSorter.Utils;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -6,19 +7,53 @@ namespace MediaSorter.Services.Implementations
     {
         public void SortMediaFilesByDate(string path, IDictionary<string, string> mediaWithMetadata)
         {
-            // loop through every image and do the following:
-            //
-            //  - attempt to parse the date to a DateTime
-            //  - if successful:
-            //      - copy each file to its own folder based on the date
-            //      - create folders if they don't exist
-            //      - name the media file in YYYY-MM-DD format
-            //      - handle name collisions
-            //
-            //  - if parsing is unsuccessful:
-            //      - copy file to an "unknown date" folder
-            //      - name the media file with the "date", stripping out non-filesafe characters
-            //      - if the string is empty, name it the original name of the file
+            var unknownDirectory = Path.Join(path, "unknown");
+            FileUtils.CreateDirectoryIfDoesntExist(unknownDirectory);
+
+            foreach (var media in mediaWithMetadata)
+            {
+                var isParseDateTakenSuccessful = DateTime.TryParse(media.Value, out var dateTaken);
+
+                if (!isParseDateTakenSuccessful)
+                    SaveMediaWithUnknownDate(path, media.Key, media.Value);
+                else
+                    SaveMediaWithDate(path, media.Key, dateTaken);
+            }
+        }
+
+        private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
+        {
+            var newFileName = dateTaken.Date.ToString("yyyy-MM-dd") + Path.GetExtension(mediaFile);
+
+            var yearTaken = dateTaken.Date.ToString("yyyy");
+            var monthTaken = dateTaken.Date.ToString("MM");
+            var dayTaken = dateTaken.Date.ToString("dd");
+
+            var yearDirectory = Path.Join(baseWritePath, yearTaken);
+            var monthDirectory = Path.Join(yearDirectory, monthTaken);
+            var dayDirectory = Path.Join(monthDirectory, dayTaken);
+
+            FileUtils.CreateDirectoryIfDoesntExist(yearDirectory);
+            FileUtils.CreateDirectoryIfDoesntExist(monthDirectory);
+            FileUtils.CreateDirectoryIfDoesntExist(dayDirectory);
+
+            var destFilePath = Path.Join(baseWritePath, newFileName);
+
+            FileUtils.CopyFile(baseWritePath, destFilePath);
+        }
+
+        private void SaveMediaWithUnknownDate(
+            string baseWriteFilePath,
+            string sourceMediaFile,
+            string newFileName
+        )
+        {
+            var processedName =
+                FileUtils.StripIllegalFileCharacters(newFileName)
+                ?? Path.GetFileName(sourceMediaFile);
+            var destFilePath = Path.Join(baseWriteFilePath, processedName);
+
+            FileUtils.CopyFile(sourceMediaFile, destFilePath);
         }
     }
 }

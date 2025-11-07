@@ -10,7 +10,7 @@ namespace MediaSorter
         private readonly IDirectoryProvider _directoryProvider;
         private readonly IFileSorter _fileSorter;
         private readonly IMetadataProvider _metadataProvider;
-        private readonly IMediaScanner _mediaProcessor;
+        private readonly IMediaScanner _mediaScanner;
 
         public App(
             IDirectoryProvider directoryProvider,
@@ -22,7 +22,7 @@ namespace MediaSorter
             _directoryProvider = directoryProvider;
             _fileSorter = fileSorter;
             _metadataProvider = metadataProvider;
-            _mediaProcessor = mediaScanner;
+            _mediaScanner = mediaScanner;
         }
 
         public int Run(string[] args)
@@ -35,7 +35,7 @@ namespace MediaSorter
                         "Please enter the path of the folder you wish to sort:"
                     );
 
-                var mediaPaths = _mediaProcessor.GetMediaInPath(readDirectory);
+                var mediaPaths = _mediaScanner.GetMediaInPath(readDirectory);
                 var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
 
                 string? writeDirectory = "";
@@ -51,6 +51,7 @@ namespace MediaSorter
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
+                Console.ReadLine(); // Temp for debugging
                 return Environment.ExitCode = 1;
             }
         }
