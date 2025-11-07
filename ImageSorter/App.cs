@@ -8,32 +8,43 @@ namespace MediaSorter
     public class App
     {
         private readonly IDirectoryProvider _directoryProvider;
+        private readonly IFileSorter _fileSorter;
         private readonly IMetadataProvider _metadataProvider;
-        private IMediaScanner _mediaProcessor;
+        private readonly IMediaScanner _mediaProcessor;
 
         public App(
             IDirectoryProvider directoryProvider,
+            IFileSorter fileSorter,
             IMetadataProvider metadataProvider,
-            IMediaScanner fileProcessor
+            IMediaScanner mediaScanner
         )
         {
             _directoryProvider = directoryProvider;
+            _fileSorter = fileSorter;
             _metadataProvider = metadataProvider;
-            _mediaProcessor = fileProcessor;
+            _mediaProcessor = mediaScanner;
         }
 
         public int Run(string[] args)
         {
             try
             {
-                string? workDirectory = "";
-                while (string.IsNullOrEmpty(workDirectory))
-                    workDirectory = _directoryProvider.GetValidMediaDirectory();
+                string? readDirectory = "";
+                while (string.IsNullOrEmpty(readDirectory))
+                    readDirectory = _directoryProvider.GetValidMediaDirectory(
+                        "Please enter the path of the folder you wish to sort:"
+                    );
 
-                var mediaPaths = _mediaProcessor.GetMediaInPath(workDirectory);
+                var mediaPaths = _mediaProcessor.GetMediaInPath(readDirectory);
                 var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
-                // TODO -
-                // _fileUtils.Save();
+
+                string? writeDirectory = "";
+                while (string.IsNullOrEmpty(readDirectory))
+                    readDirectory = _directoryProvider.GetValidMediaDirectory(
+                        "\"Please enter the path of the folder where you wish to save the sorted files:\""
+                    );
+
+                _fileSorter.SortMediaFilesByDate(writeDirectory, mediaWithMetadata);
 
                 return Environment.ExitCode = 0;
             }

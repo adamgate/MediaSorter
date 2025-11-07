@@ -16,8 +16,9 @@ namespace MediaSorter
             var builder = Host.CreateApplicationBuilder(args);
 
             builder.Services.AddScoped<IMediaScanner, MediaScanner>();
-            builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
             builder.Services.AddScoped<IDirectoryProvider, CliDirectoryProvider>();
+            builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
+            builder.Services.AddScoped<IFileSorter, FileSorter>();
 
             builder.Services.AddTransient<App>();
 

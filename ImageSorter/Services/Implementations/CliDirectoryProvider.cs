@@ -4,9 +4,9 @@ namespace MediaSorter.Services.Implementations
 {
     public class CliDirectoryProvider : IDirectoryProvider
     {
-        public string? GetValidMediaDirectory()
+        public string? GetValidMediaDirectory(string message)
         {
-            Console.WriteLine("Please enter the path of the folder you wish to sort:");
+            Console.WriteLine(message);
             var path = Console.ReadLine();
 
             if (File.Exists(path))

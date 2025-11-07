@@ -3,9 +3,8 @@ using MediaSorter.Utils;
 
 namespace MediaSorter.Services.Implementations
 {
-    // TODO - make class static? Currently has no fields/properties
     /// <summary>
-    /// Scans for all the
+    /// Scans for all of the image and video files in the provided directory and children directories.
     /// </summary>
     public class MediaScanner : IMediaScanner
     {
