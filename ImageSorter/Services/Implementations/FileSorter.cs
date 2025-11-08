@@ -1,5 +1,6 @@
 ﻿using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
+using System.Text;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -32,7 +33,6 @@ namespace MediaSorter.Services.Implementations
         private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
         {
             var newFileName = dateTaken.Date.ToString("yyyy-MM-dd") + Path.GetExtension(mediaFile);
-
             var yearTaken = dateTaken.Date.ToString("yyyy");
             var monthTaken = dateTaken.Date.ToString("MMMM");
 
@@ -45,9 +45,15 @@ namespace MediaSorter.Services.Implementations
 
         private void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
         {
-            var processedName = FileUtils.StripIllegalFileCharacters(newFileName) ?? Path.GetFileName(mediaFile);
-            processedName += Path.GetExtension(mediaFile);
-            var destFilePath = Path.Join(baseWriteFilePath, processedName);
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append(Path.GetFileNameWithoutExtension(mediaFile));
+            stringBuilder.Append(" - Date Info -- ");
+            stringBuilder.Append(FileUtils.StripIllegalFileCharacters(newFileName));
+            stringBuilder.Append(Path.GetExtension(mediaFile));
+
+            var destFile = stringBuilder.ToString();
+            var destFilePath = Path.Join(baseWriteFilePath, destFile);
 
             FileUtils.CopyFile(mediaFile, destFilePath);
         }

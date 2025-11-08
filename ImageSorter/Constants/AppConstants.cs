@@ -6,7 +6,7 @@
         [
             // Images
             ".png",
-            ".jpg", 
+            ".jpg",
             ".jpeg",
             ".heic",
             ".heif",

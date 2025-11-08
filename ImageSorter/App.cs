@@ -55,7 +55,7 @@ namespace MediaSorter
                 }
 
                 var writeDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder where you wish to save the sorted files:");
-                if (writeDirectory is null)
+                if (writeDirectory is null || writeDirectory.Equals(readDirectory))
                 {
                     Console.WriteLine("Exiting...");
                     return Environment.ExitCode = 0;

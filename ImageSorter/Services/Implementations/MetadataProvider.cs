@@ -11,12 +11,7 @@ namespace MediaSorter.Services.Implementations
     {
         private record RawMetadata(string Directory, string Name, string Description);
 
-        private record WeightedMetadata(
-            string Directory,
-            string Name,
-            string Description,
-            double AccuracyWeight
-        );
+        private record WeightedMetadata(string Directory, string Name, string Description, double AccuracyWeight);
 
         /// <summary>
         /// Extacts the date taken metadata from the provided media.
@@ -59,6 +54,7 @@ namespace MediaSorter.Services.Implementations
             if (rawMetadata.Name.EqualsIgnoreCase("Date/Time"))
                 return 0.6;
 
+            // This is useless in the context of when the photo was taken
             if (rawMetadata.Name.EqualsIgnoreCase("File Modified Date"))
                 return 0.0;
 
