@@ -1,4 +1,6 @@
-﻿using MediaSorter.Services.Interfaces;
+﻿using MediaSorter.Constants;
+using MediaSorter.Services.Interfaces;
+using MediaSorter.Utils;
 
 namespace MediaSorter
 {
@@ -16,8 +18,7 @@ namespace MediaSorter
             IDirectoryProvider directoryProvider,
             IFileSorter fileSorter,
             IMetadataProvider metadataProvider,
-            IMediaScanner mediaScanner
-        )
+            IMediaScanner mediaScanner)
         {
             _directoryProvider = directoryProvider;
             _fileSorter = fileSorter;
@@ -29,19 +30,40 @@ namespace MediaSorter
         {
             try
             {
-                string? readDirectory = "";
-                while (string.IsNullOrEmpty(readDirectory))
-                    readDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder you wish to sort:");
+                var readDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder you wish to sort:");
+                if (readDirectory is null)
+                {
+                    Console.WriteLine("Exiting...");
+                    return Environment.ExitCode = 0;
+                }
 
                 var mediaPaths = _mediaScanner.GetMediaInPath(readDirectory);
-                var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
 
-                string? writeDirectory = "";
-                while (string.IsNullOrEmpty(writeDirectory))
-                    writeDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder where you wish to save the sorted files:");
+                var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
+                if (mediaWithMetadata.Count == 0)
+                {
+                    Console.WriteLine("No media files were found. Exiting...");
+                    return Environment.ExitCode = 0;
+                }
+
+                Console.WriteLine("Found {0} media files.", mediaWithMetadata.Count);
+                var shouldProceed = CliUtils.GetYesNoFromUser("Are you sure you want to proceed? (Y/N)");
+                if (!shouldProceed)
+                {
+                    Console.WriteLine("Exiting...");
+                    return Environment.ExitCode = 0;
+                }
+
+                var writeDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder where you wish to save the sorted files:");
+                if (writeDirectory is null)
+                {
+                    Console.WriteLine("Exiting...");
+                    return Environment.ExitCode = 0;
+                }
 
                 _fileSorter.SortMediaFilesByDate(writeDirectory, mediaWithMetadata);
 
+                Console.WriteLine("Successfully sorted {0} files. Exiting...", mediaWithMetadata.Count);
                 return Environment.ExitCode = 0;
             }
             catch (Exception ex)
