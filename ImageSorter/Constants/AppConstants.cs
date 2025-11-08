@@ -1,13 +1,13 @@
 ﻿namespace MediaSorter.Constants
 {
-    public static class Constants
+    public static class AppConstants
     {
-        // TODO - move this in a config file?
         public static readonly string[] SupportedMediaFormats =
         [
             // Images
             ".png",
-            ".jpg", ".jpeg",
+            ".jpg", 
+            ".jpeg",
             ".heic",
             ".heif",
             ".avif",
@@ -23,5 +23,7 @@
             ".mov",
             ".mp4"
         ];
+
+        public static readonly char[] IllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*'];
     }
 }

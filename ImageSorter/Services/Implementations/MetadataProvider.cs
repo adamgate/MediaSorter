@@ -31,10 +31,7 @@ namespace MediaSorter.Services.Implementations
             foreach (var media in assortedDateMetadata)
             {
                 var dateTaken = media.Value
-                    .Select(
-                        x =>
-                            new WeightedMetadata(x.Directory, x.Name, x.Description, WeightDates(x))
-                    )
+                    .Select(x =>new WeightedMetadata(x.Directory, x.Name, x.Description, WeightDates(x)))
                     .OrderByDescending(x => x.AccuracyWeight)
                     .First();
 
@@ -50,10 +47,7 @@ namespace MediaSorter.Services.Implementations
         /// </summary>
         private double WeightDates(RawMetadata rawMetadata)
         {
-            if (
-                rawMetadata.Directory.Contains("Exif")
-                && rawMetadata.Name.EqualsIgnoreCase("Date/Time Original")
-            )
+            if (rawMetadata.Directory.Contains("Exif") && rawMetadata.Name.EqualsIgnoreCase("Date/Time Original"))
                 return 0.9;
 
             if (rawMetadata.Name.EqualsIgnoreCase("GPS Date Stamp"))
@@ -71,9 +65,7 @@ namespace MediaSorter.Services.Implementations
             return 0.1;
         }
 
-        private IDictionary<string, List<RawMetadata>> GetRawDateMetadata(
-            IEnumerable<string> mediaPaths
-        )
+        private IDictionary<string, List<RawMetadata>> GetRawDateMetadata(IEnumerable<string> mediaPaths)
         {
             var mediaWithMetadata = new Dictionary<string, List<RawMetadata>>();
 

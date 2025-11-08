@@ -19,13 +19,13 @@ namespace MediaSorter.Services.Implementations
 
             if (File.Exists(path))
             {
-                Console.WriteLine("{0} is a file and not a directory.", path);
+                Console.WriteLine("\"{0}\" is a file and not a directory. Please choose an existing directory.", path);
                 return null;
             }
 
             if (!Directory.Exists(path))
             {
-                Console.WriteLine("The directory \"{0}\" does not exist.", path);
+                Console.WriteLine("The directory \"{0}\" does not exist. Please choose an existing directory.", path);
                 return null;
             }
 

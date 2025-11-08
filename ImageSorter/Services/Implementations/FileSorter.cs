@@ -9,23 +9,23 @@ namespace MediaSorter.Services.Implementations
     public class FileSorter : IFileSorter
     {
         /// <summary>
-        ///  Attempts to sort media files by their taken date if possible, otherwise by their original name
+        ///  Attempts to sort media files by their taken date if possible, otherwise by their original name.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="writePath"></param>
         /// <param name="mediaWithMetadata"></param>
-        public void SortMediaFilesByDate(string path, IDictionary<string, string> mediaWithMetadata)
+        public void SortMediaFilesByDate(string writePath, IDictionary<string, string> mediaWithMetadata)
         {
-            var unknownDirectory = Path.Join(path, "unknown");
-            FileUtils.CreateDirectoryIfDoesntExist(unknownDirectory);
+            var unknownDateWritePath = Path.Join(writePath, "unknown");
+            FileUtils.CreateDirectoryIfDoesntExist(unknownDateWritePath);
 
             foreach (var media in mediaWithMetadata)
             {
                 var isParseDateTakenSuccessful = DateTime.TryParse(media.Value, out var dateTaken);
 
                 if (!isParseDateTakenSuccessful)
-                    SaveMediaWithUnknownDate(path, media.Key, media.Value);
+                    SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value);
                 else
-                    SaveMediaWithDate(path, media.Key, dateTaken);
+                    SaveMediaWithDate(writePath, media.Key, dateTaken);
             }
         }
 
@@ -34,34 +34,22 @@ namespace MediaSorter.Services.Implementations
             var newFileName = dateTaken.Date.ToString("yyyy-MM-dd") + Path.GetExtension(mediaFile);
 
             var yearTaken = dateTaken.Date.ToString("yyyy");
-            var monthTaken = dateTaken.Date.ToString("MM");
-            var dayTaken = dateTaken.Date.ToString("dd");
+            var monthTaken = dateTaken.Date.ToString("MMMM");
 
-            var yearDirectory = Path.Join(baseWritePath, yearTaken);
-            var monthDirectory = Path.Join(yearDirectory, monthTaken);
-            var dayDirectory = Path.Join(monthDirectory, dayTaken);
+            var outputDirectory = Path.Join(baseWritePath, yearTaken, monthTaken);
+            FileUtils.CreateDirectoryIfDoesntExist(outputDirectory);
 
-            FileUtils.CreateDirectoryIfDoesntExist(yearDirectory);
-            FileUtils.CreateDirectoryIfDoesntExist(monthDirectory);
-            FileUtils.CreateDirectoryIfDoesntExist(dayDirectory);
-
-            var destFilePath = Path.Join(baseWritePath, newFileName);
-
-            FileUtils.CopyFile(baseWritePath, destFilePath);
+            var destFilePath = Path.Join(outputDirectory, newFileName);
+            FileUtils.CopyFile(mediaFile, destFilePath);
         }
 
-        private void SaveMediaWithUnknownDate(
-            string baseWriteFilePath,
-            string sourceMediaFile,
-            string newFileName
-        )
+        private void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
         {
-            var processedName =
-                FileUtils.StripIllegalFileCharacters(newFileName)
-                ?? Path.GetFileName(sourceMediaFile);
+            var processedName = FileUtils.StripIllegalFileCharacters(newFileName) ?? Path.GetFileName(mediaFile);
+            processedName += Path.GetExtension(mediaFile);
             var destFilePath = Path.Join(baseWriteFilePath, processedName);
 
-            FileUtils.CopyFile(sourceMediaFile, destFilePath);
+            FileUtils.CopyFile(mediaFile, destFilePath);
         }
     }
 }

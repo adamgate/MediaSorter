@@ -31,18 +31,14 @@ namespace MediaSorter
             {
                 string? readDirectory = "";
                 while (string.IsNullOrEmpty(readDirectory))
-                    readDirectory = _directoryProvider.GetValidDirectory(
-                        "Please enter the path of the folder you wish to sort:"
-                    );
+                    readDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder you wish to sort:");
 
                 var mediaPaths = _mediaScanner.GetMediaInPath(readDirectory);
                 var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
 
                 string? writeDirectory = "";
-                while (string.IsNullOrEmpty(readDirectory))
-                    readDirectory = _directoryProvider.GetValidDirectory(
-                        "\"Please enter the path of the folder where you wish to save the sorted files:\""
-                    );
+                while (string.IsNullOrEmpty(writeDirectory))
+                    writeDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder where you wish to save the sorted files:");
 
                 _fileSorter.SortMediaFilesByDate(writeDirectory, mediaWithMetadata);
 
@@ -51,7 +47,6 @@ namespace MediaSorter
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
-                Console.ReadLine(); // Temp for debugging
                 return Environment.ExitCode = 1;
             }
         }
