@@ -39,23 +39,22 @@ namespace MediaSorter.Services.Implementations
             var outputDirectory = Path.Join(baseWritePath, yearTaken, monthTaken);
             FileUtils.CreateDirectoryIfDoesntExist(outputDirectory);
 
-            var destFilePath = Path.Join(outputDirectory, newFileName);
-            FileUtils.CopyFile(mediaFile, destFilePath);
+            var destinationFilePath = Path.Join(outputDirectory, newFileName);
+            FileUtils.CopyFile(mediaFile, destinationFilePath);
         }
 
         private void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
         {
-            var stringBuilder = new StringBuilder();
+            var destinationFile = new StringBuilder()
+                .Append(Path.GetFileNameWithoutExtension(mediaFile))
+                .Append(" -- ")
+                .Append(FileUtils.StripIllegalFileCharacters(newFileName))
+                .Append(Path.GetExtension(mediaFile))
+                .ToString();
 
-            stringBuilder.Append(Path.GetFileNameWithoutExtension(mediaFile));
-            stringBuilder.Append(" -- ");
-            stringBuilder.Append(FileUtils.StripIllegalFileCharacters(newFileName));
-            stringBuilder.Append(Path.GetExtension(mediaFile));
+            var destinationFilePath = Path.Join(baseWriteFilePath, destinationFile);
 
-            var destFile = stringBuilder.ToString();
-            var destFilePath = Path.Join(baseWriteFilePath, destFile);
-
-            FileUtils.CopyFile(mediaFile, destFilePath);
+            FileUtils.CopyFile(mediaFile, destinationFilePath);
         }
     }
 }

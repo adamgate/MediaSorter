@@ -1,5 +1,6 @@
 ﻿using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
+using System.Reflection;
 using System.Text;
 
 namespace MediaSorter
@@ -13,6 +14,7 @@ namespace MediaSorter
         private readonly IFileSorter _fileSorter;
         private readonly IMediaScanner _mediaScanner;
         private readonly IMetadataProvider _metadataProvider;
+        private readonly string _version = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "X.X.X.X";
 
         public App(
             IDirectoryProvider directoryProvider,
@@ -28,12 +30,14 @@ namespace MediaSorter
 
         public void Run(string[] args)
         {
+            // Allow copyright symbol to display correctly
             Console.OutputEncoding = Encoding.UTF8;
 
             try
             {
                 Console.WriteLine("-------------------------------");
-                Console.WriteLine($"MEDIA SORTER v0.8.0 \n© {DateTime.Now.ToString("MMMM yyyy")}");
+                Console.WriteLine($"MEDIA SORTER v{_version}");
+                Console.WriteLine($"© {DateTime.Now.ToString("MMMM yyyy")}");
                 Console.WriteLine("-------------------------------");
 
                 var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
@@ -46,6 +50,7 @@ namespace MediaSorter
                 var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
                 if (mediaWithMetadata.Count == 0)
                     CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", 0);
+                Console.WriteLine("Found {0} media files.", mediaWithMetadata.Count);
 
                 var outputDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder where you wish to save the sorted files:");
                 if (outputDirectory is null)
@@ -53,7 +58,6 @@ namespace MediaSorter
                 if (outputDirectory.Equals(sourceDirectory))
                     CliUtils.DisplayMessageAndExit("The output directory cannot be the same as the source directory. Exiting...", 0);
 
-                Console.WriteLine("Found {0} media files.", mediaWithMetadata.Count);
                 var shouldProceed = CliUtils.GetYesNoFromUser("Are you sure you want to proceed? (Y/N)");
                 if (!shouldProceed)
                     CliUtils.DisplayMessageAndExit("Exiting...", 0);
@@ -61,7 +65,7 @@ namespace MediaSorter
                 Console.WriteLine($"\nSorting {mediaWithMetadata.Count} files...");
                 _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithMetadata);
 
-                CliUtils.DisplayMessageAndExit($"Successfully sorted {mediaWithMetadata.Count} files. Exiting...", 0);
+                CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithMetadata.Count} files. Exiting...", 0);
             }
             catch (Exception ex)
             {
