@@ -48,7 +48,7 @@ namespace MediaSorter.Services.Implementations
             var stringBuilder = new StringBuilder();
 
             stringBuilder.Append(Path.GetFileNameWithoutExtension(mediaFile));
-            stringBuilder.Append(" - Date Info -- ");
+            stringBuilder.Append(" -- ");
             stringBuilder.Append(FileUtils.StripIllegalFileCharacters(newFileName));
             stringBuilder.Append(Path.GetExtension(mediaFile));
 
