@@ -14,7 +14,7 @@ namespace MediaSorter.Utils
         public static bool GetYesNoFromUser(string message)
         {
             string? input = null;
-            while (input == null || (!AppConstants.ConfirmationCommands.Contains(input) && !AppConstants.DeclineCommands.Contains(input)))
+            while (input == null || (!AppConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !AppConstants.DeclineCommands.ContainsIgnoreCase(input)))
             {
                 Console.WriteLine(message);
                 Console.Write("> ");
