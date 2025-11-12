@@ -19,8 +19,8 @@ namespace MediaSorter
         public App(
             IDirectoryProvider directoryProvider,
             IFileSorter fileSorter,
-            IMetadataProvider metadataProvider,
-            IMediaScanner mediaScanner)
+            IMediaScanner mediaScanner,
+            IMetadataProvider metadataProvider)
         {
             _directoryProvider = directoryProvider;
             _fileSorter = fileSorter;
@@ -46,11 +46,12 @@ namespace MediaSorter
 
                 Console.WriteLine("\nScanning for media...");
                 var mediaPaths = _mediaScanner.GetMediaInPath(sourceDirectory);
+                if (!mediaPaths.Any())
+                    CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", 0);
+                Console.WriteLine("Found {0} media files.", mediaPaths.Count());
 
                 var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
-                if (mediaWithMetadata.Count == 0)
-                    CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", 0);
-                Console.WriteLine("Found {0} media files.", mediaWithMetadata.Count);
+                // do any checks need to be done here?
 
                 var outputDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder where you wish to save the sorted files:");
                 if (outputDirectory is null)

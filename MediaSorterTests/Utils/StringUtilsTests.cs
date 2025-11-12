@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using MediaSorter.Utils;
+﻿using MediaSorter.Utils;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MediaSorterTests.Utils
