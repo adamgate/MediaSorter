@@ -32,13 +32,17 @@ namespace MediaSorter.Services.Implementations
 
             if (File.Exists(path))
             {
-                Console.WriteLine("\"{0}\" is a file and not a directory. Please choose an existing directory.\n", path);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\"{0}\" is a file and not a directory. Please choose an existing directory.", path);
+                Console.ForegroundColor = ConsoleColor.White;
                 return null;
             }
 
             if (!Directory.Exists(path))
             {
-                Console.WriteLine("The directory \"{0}\" does not exist. Please choose an existing directory.\n", path);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("The directory \"{0}\" does not exist. Please choose an existing directory.", path);
+                Console.ForegroundColor = ConsoleColor.White;
                 return null;
             }
 

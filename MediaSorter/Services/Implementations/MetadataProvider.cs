@@ -16,8 +16,6 @@ namespace MediaSorter.Services.Implementations
         /// <summary>
         /// Extacts the date taken metadata from the provided media.
         /// </summary>
-        /// <param name="mediaPaths">The media paths.</param>
-        /// <returns></returns>
         public IDictionary<string, string> EvaluateMediaMetadata(IEnumerable<string> mediaPaths)
         {
             var assortedDateMetadata = GetRawDateMetadata(mediaPaths);

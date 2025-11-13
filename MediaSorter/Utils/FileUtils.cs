@@ -2,39 +2,56 @@
 
 namespace MediaSorter.Utils
 {
+    /// <summary>
+    /// Utilities related to the file system.
+    /// </summary>
     public static class FileUtils
     {
+        /// <summary>
+        /// Creates a directory if it doesn't already exist.
+        /// </summary>
         public static void CreateDirectoryIfDoesntExist(string path)
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
         }
 
+        /// <summary>
+        /// Strips illegal file characters from the provided string.
+        /// </summary>
         public static string? StripIllegalFileCharacters(string fileName) =>
             string.Concat(fileName.Where(x => !AppConstants.IllegalFileCharacters.Contains(x)));
 
-        public static void CopyFile(string sourceFileName, string destFileName)
+        /// <summary>
+        /// Attempts to copy a file to the provided destination.
+        /// </summary>
+        public static void CopyFile(string sourceFileName, string destinationFileName)
         {
             try
             {
-                File.Copy(sourceFileName, destFileName);
+                File.Copy(sourceFileName, destinationFileName);
             }
             catch (Exception ex)
             {
+                string errorMessage = string.Empty;
+
                 if (ex is FileNotFoundException)
-                    Console.WriteLine("Could not find the source file \"{0}\" to copy", sourceFileName);
+                    errorMessage = $"Could not find the source file \"{sourceFileName}\" to copy";
 
                 else if (ex is DirectoryNotFoundException)
-                    Console.WriteLine("Destination folder \"{0}\" does not exist for file \"{1}\"", Path.GetDirectoryName(destFileName), Path.GetFileName(destFileName));
+                    errorMessage = $"Destination folder \"{Path.GetDirectoryName(destinationFileName)}\" does not exist for file \"{Path.GetFileName(destinationFileName)}\"";
 
                 else if (ex is IOException)
-                    Console.WriteLine("Destination file \"{0}\" already exists.", destFileName);
+                    errorMessage = $"Destination file \"{destinationFileName}\" already exists.";
 
                 else
                 {
-                    Console.WriteLine("An unexpected error occurred: {0}", ex.Message);
-                    throw;
+                    errorMessage = $"An unexpected error occurred: {ex.Message}";
+                    CliUtils.DisplayMessageWithColor(errorMessage, ConsoleColor.Red);
+                    throw; 
                 }
+                
+                CliUtils.DisplayMessageWithColor(errorMessage, ConsoleColor.Red);
             }
         }
     }

@@ -23,6 +23,7 @@ namespace MediaSorter.Services.Implementations
             {
                 var isParseDateTakenSuccessful = DateTime.TryParse(media.Value, out var dateTaken);
 
+                // attempt to parse dates differently based on the file type?
                 if (!isParseDateTakenSuccessful)
                     SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value);
                 else

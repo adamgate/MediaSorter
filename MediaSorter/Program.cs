@@ -12,7 +12,6 @@ namespace MediaSorter
     {
         private static void Main(string[] args)
         {
-            // Hosting and DI are overkill for this app, but good for practice
             var builder = Host.CreateApplicationBuilder(args);
 
             builder.Services.AddScoped<IMediaScanner, MediaScanner>();
