@@ -2,8 +2,14 @@
 {
     public static class AppConstants
     {
+        public static readonly string[] ConfirmationCommands = ["Yes", "Y"];
+
+        public static readonly string[] DeclineCommands = ["No", "N"];
+
+        public static readonly char[] IllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*'];
+
         public static readonly string[] SupportedMediaFormats =
-        [
+                                [
             // Images
             ".png",
             ".jpg",
@@ -24,12 +30,6 @@
             ".mp4"
         ];
 
-        public static readonly char[] IllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*'];
-
-        public static readonly string[] TerminationCommands = ["Exit", "exit", "X", "x"];
-
-        public static readonly string[] ConfirmationCommands = ["Yes", "yes", "Y", "y"];
-
-        public static readonly string[] DeclineCommands = ["No", "no", "N", "n"];
+        public static readonly string[] TerminationCommands = ["Exit", "X"];
     }
 }

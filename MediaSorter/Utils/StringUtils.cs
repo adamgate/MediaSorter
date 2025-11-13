@@ -2,9 +2,6 @@
 {
     public static class StringUtils
     {
-        public static bool EqualsIgnoreCase(this string val1, string val2) 
-            => string.Equals(val1, val2, StringComparison.OrdinalIgnoreCase);
-
         public static bool ContainsIgnoreCase(this IEnumerable<string> source, string value)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -17,5 +14,8 @@
 
             return false;
         }
+
+        public static bool EqualsIgnoreCase(this string val1, string val2)
+                    => string.Equals(val1, val2, StringComparison.OrdinalIgnoreCase);
     }
 }

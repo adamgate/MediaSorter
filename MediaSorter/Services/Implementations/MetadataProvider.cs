@@ -5,7 +5,7 @@ using MetadataExtractor;
 namespace MediaSorter.Services.Implementations
 {
     /// <summary>
-    /// Extracts the date metadata from provided media files.
+    /// Extracts metadata from provided files.
     /// </summary>
     public class MetadataProvider : IMetadataProvider
     {
@@ -24,7 +24,7 @@ namespace MediaSorter.Services.Implementations
             foreach (var media in assortedDateMetadata)
             {
                 var dateTaken = media.Value
-                    .Select(x =>new WeightedMetadata(x.Directory, x.Name, x.Description, WeightDates(x)))
+                    .Select(x => new WeightedMetadata(x.Directory, x.Name, x.Description, WeightDates(x)))
                     .OrderByDescending(x => x.AccuracyWeight)
                     .First();
 
@@ -32,31 +32,6 @@ namespace MediaSorter.Services.Implementations
             }
 
             return parsedMetadata;
-        }
-
-        // TODO - provide different weights based on desired dates, like if the user wants to prioritize the date digitized.
-        /// <summary>
-        /// Weights the date metadata on how accurate it is likely to be, preferring EXIF metadata.
-        /// </summary>
-        private double WeightDates(RawMetadata rawMetadata)
-        {
-            if (rawMetadata.Directory.Contains("Exif") && rawMetadata.Name.EqualsIgnoreCase("Date/Time Original"))
-                return 0.9;
-
-            if (rawMetadata.Name.EqualsIgnoreCase("GPS Date Stamp"))
-                return 0.8;
-
-            if (rawMetadata.Name.EqualsIgnoreCase("Date/Time Digitized"))
-                return 0.7;
-
-            if (rawMetadata.Name.EqualsIgnoreCase("Date/Time"))
-                return 0.6;
-
-            // This is useless in the context of when the photo was taken
-            if (rawMetadata.Name.EqualsIgnoreCase("File Modified Date"))
-                return 0.0;
-
-            return 0.1;
         }
 
         private IDictionary<string, List<RawMetadata>> GetRawDateMetadata(IEnumerable<string> mediaPaths)
@@ -81,6 +56,31 @@ namespace MediaSorter.Services.Implementations
             }
 
             return mediaWithMetadata;
+        }
+
+        // TODO - provide different weights based on desired dates, like if the user wants to prioritize the date digitized.
+        /// <summary>
+        /// Weights the date metadata on how accurate it is likely to be, preferring EXIF metadata.
+        /// </summary>
+        private double WeightDates(RawMetadata rawMetadata)
+        {
+            if (rawMetadata.Directory.Contains("Exif") && rawMetadata.Name.EqualsIgnoreCase("Date/Time Original"))
+                return 0.9;
+
+            if (rawMetadata.Name.EqualsIgnoreCase("GPS Date Stamp"))
+                return 0.8;
+
+            if (rawMetadata.Name.EqualsIgnoreCase("Date/Time Digitized"))
+                return 0.7;
+
+            if (rawMetadata.Name.EqualsIgnoreCase("Date/Time"))
+                return 0.6;
+
+            // This is almost always useless in the context of when the photo was taken
+            if (rawMetadata.Name.EqualsIgnoreCase("File Modified Date"))
+                return 0.0;
+
+            return 0.1;
         }
     }
 }

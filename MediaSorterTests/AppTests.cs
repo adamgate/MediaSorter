@@ -10,25 +10,40 @@ namespace MediaSorterTests
     [ExcludeFromCodeCoverage]
     public sealed class AppTests
     {
-        private App _sut;
+        private readonly Fixture _fixture;
         private Mock<IDirectoryProvider> _directoryProvider;
         private Mock<IFileSorter> _fileSorter;
         private Mock<IMediaScanner> _mediaScanner;
         private Mock<IMetadataProvider> _metadataProvider;
-        private readonly Fixture _fixture;
+        private App _sut;
 
-        [TestInitialize]
-        public void Setup()
+        [TestMethod]
+        public void Run_ExceptionThrown_ReturnsSuccess()
+        { }
+
+        [TestMethod]
+        public void Run_FilesSorted_ReturnsSuccess()
+        { }
+
+        [TestMethod]
+        public void Run_NoFilesFound_ReturnsSuccess()
         {
-            _directoryProvider = new();
-            _fileSorter = new();
-            _mediaScanner = new();
-            _metadataProvider = new();
-            _sut = new(
-                _directoryProvider.Object, 
-                _fileSorter.Object, 
-                _mediaScanner.Object, 
-                _metadataProvider.Object);
+            // Assert
+            // ensure that _metadataProvider.EvaluateMediaMetadata() is not hit
+        }
+
+        [TestMethod]
+        public void Run_NonexistantOutputDirectory_ReturnsSuccess()
+        {
+            // Assert
+            // ensure that _fileSorter.SortMediaFilesByDate() is not hit
+        }
+
+        [TestMethod]
+        public void Run_NullOutputDirectory_ReturnsSuccess()
+        {
+            // Assert
+            // ensure that _fileSorter.SortMediaFilesByDate() is not hit
         }
 
         [TestMethod]
@@ -46,33 +61,18 @@ namespace MediaSorterTests
             // ensure that _mediaScanner.GetMediaInPath() is not hit
         }
 
-        [TestMethod]
-        public void Run_NullOutputDirectory_ReturnsSuccess()
+        [TestInitialize]
+        public void Setup()
         {
-            // Assert
-            // ensure that _fileSorter.SortMediaFilesByDate() is not hit
+            _directoryProvider = new();
+            _fileSorter = new();
+            _mediaScanner = new();
+            _metadataProvider = new();
+            _sut = new(
+                _directoryProvider.Object,
+                _fileSorter.Object,
+                _mediaScanner.Object,
+                _metadataProvider.Object);
         }
-
-        [TestMethod]
-        public void Run_NonexistantOutputDirectory_ReturnsSuccess()
-        {
-            // Assert
-            // ensure that _fileSorter.SortMediaFilesByDate() is not hit
-        }
-
-        [TestMethod]
-        public void Run_NoFilesFound_ReturnsSuccess()
-        {
-            // Assert
-            // ensure that _metadataProvider.EvaluateMediaMetadata() is not hit
-        }
-
-        [TestMethod]
-        public void Run_ExceptionThrown_ReturnsSuccess()
-        { }
-
-        [TestMethod]
-        public void Run_FilesSorted_ReturnsSuccess()
-        { }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MediaSorter
@@ -64,15 +63,6 @@ namespace MediaSorter
             }
         }
 
-        private string GetSourceDirectory()
-        {
-            var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
-            if (sourceDirectory is null)
-                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Green, 0);
-
-            return sourceDirectory;
-        }
-
         private IEnumerable<string> GetMediaPaths(string sourceDirectory)
         {
             Console.WriteLine("\nScanning for media...");
@@ -84,15 +74,6 @@ namespace MediaSorter
             return mediaPaths;
         }
 
-        private IDictionary<string, string> LoadMediaMetadata(IEnumerable<string> mediaPaths)
-        {
-            Console.WriteLine("\nLoading date metadata for {0} files...", mediaPaths.Count());
-            var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
-            Console.WriteLine("Date metadata loaded.");
-
-            return mediaWithMetadata;
-        }
-
         private string GetOutputDirectory()
         {
             var outputDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder where you wish to save the sorted files:");
@@ -100,6 +81,24 @@ namespace MediaSorter
                 CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
 
             return outputDirectory;
+        }
+
+        private string GetSourceDirectory()
+        {
+            var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
+            if (sourceDirectory is null)
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Green, 0);
+
+            return sourceDirectory;
+        }
+
+        private IDictionary<string, string> LoadMediaMetadata(IEnumerable<string> mediaPaths)
+        {
+            Console.WriteLine("\nLoading date metadata for {0} files...", mediaPaths.Count());
+            var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
+            Console.WriteLine("Date metadata loaded.");
+
+            return mediaWithMetadata;
         }
     }
 }
