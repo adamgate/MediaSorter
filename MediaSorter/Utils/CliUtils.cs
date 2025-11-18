@@ -36,7 +36,7 @@ namespace MediaSorter.Utils
 
             Console.ForegroundColor = foregroundColor;
             Console.WriteLine(message);
-            Console.ForegroundColor = originalColor; ;
+            Console.ForegroundColor = originalColor;
         }
 
         /// <summary>
@@ -44,15 +44,19 @@ namespace MediaSorter.Utils
         /// </summary>
         public static bool GetYesNoFromUser(string message)
         {
+        Loop:
             string? input = null;
-            while (input == null || (!AppConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !AppConstants.DeclineCommands.ContainsIgnoreCase(input)))
+            while (input is null)
             {
                 Console.WriteLine(message);
                 Console.Write("> ");
                 input = Console.ReadLine();
             }
 
-            return AppConstants.ConfirmationCommands.Contains(input);
+            if (!AppConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !AppConstants.DeclineCommands.ContainsIgnoreCase(input))
+                goto Loop;
+
+            return AppConstants.ConfirmationCommands.ContainsIgnoreCase(input);
         }
     }
 }
