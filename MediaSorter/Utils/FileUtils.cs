@@ -11,7 +11,7 @@ namespace MediaSorter.Utils
         }
 
         public static string? StripIllegalFileCharacters(string fileName) =>
-            string.Concat(fileName.Where(x => !AppConstants.IllegalFileCharacters.Contains(x)));
+            string.Concat(fileName.Where(x => !FileConstants.IllegalFileCharacters.Contains(x)));
 
         public static void CopyFile(string sourceFileName, string destFileName)
         {

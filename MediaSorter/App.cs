@@ -6,10 +6,11 @@ using System.Text;
 namespace MediaSorter
 {
     /// <summary>
-    ///  Entry point for the program.
+    /// Entry point for the program.
     /// </summary>
     public class App
     {
+        private readonly IDateParser _dateParser;
         private readonly IDirectoryProvider _directoryProvider;
         private readonly IFileSorter _fileSorter;
         private readonly IMediaScanner _mediaScanner;
@@ -17,11 +18,13 @@ namespace MediaSorter
         private readonly string _version = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "X.X.X.X";
 
         public App(
+            IDateParser dateParser,
             IDirectoryProvider directoryProvider,
             IFileSorter fileSorter,
             IMetadataProvider metadataProvider,
             IMediaScanner mediaScanner)
         {
+            _dateParser = dateParser;
             _directoryProvider = directoryProvider;
             _fileSorter = fileSorter;
             _metadataProvider = metadataProvider;
@@ -62,10 +65,14 @@ namespace MediaSorter
                 if (!shouldProceed)
                     CliUtils.DisplayMessageAndExit("Exiting...", 0);
 
-                Console.WriteLine($"\nSorting {mediaWithMetadata.Count} files...");
-                _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithMetadata);
+                Console.WriteLine("\nProcessing dates...");
+                var mediaWithProcessedDates = _dateParser.Parse(mediaWithMetadata);
+                Console.WriteLine("Done processing dates.");
 
-                CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithMetadata.Count} files. Exiting...", 0);
+                Console.WriteLine($"\nSorting {mediaWithProcessedDates.Count} files...");
+                _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithProcessedDates);
+
+                CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithProcessedDates.Count} files. Exiting...", 0);
             }
             catch (Exception ex)
             {

@@ -14,7 +14,7 @@ namespace MediaSorter.Services.Implementations
             while (string.IsNullOrEmpty(directory))
                 directory = LoopUntilAcceptableInput(message);
 
-            if (AppConstants.TerminationCommands.Contains(directory))
+            if (CommandLineConstants.TerminationCommands.Contains(directory))
                 return null;
 
             return directory;
@@ -27,7 +27,7 @@ namespace MediaSorter.Services.Implementations
             Console.Write("> ");
             var path = Console.ReadLine();
 
-            if (AppConstants.TerminationCommands.Contains(path))
+            if (CommandLineConstants.TerminationCommands.Contains(path))
                 return path;
 
             if (File.Exists(path))
