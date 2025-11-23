@@ -1,4 +1,5 @@
-﻿using MediaSorter.Services.Interfaces;
+﻿using MediaSorter.Models;
+using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
 using System.Reflection;
 using System.Text;
@@ -6,10 +7,11 @@ using System.Text;
 namespace MediaSorter
 {
     /// <summary>
-    ///  Entry point for the program.
+    /// Entry point for the program.
     /// </summary>
     public class App
     {
+        private readonly IDateParser _dateParser;
         private readonly IDirectoryProvider _directoryProvider;
         private readonly IFileSorter _fileSorter;
         private readonly IMediaScanner _mediaScanner;
@@ -17,11 +19,13 @@ namespace MediaSorter
         private readonly string _version = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "X.X.X.X";
 
         public App(
+            IDateParser dateParser,
             IDirectoryProvider directoryProvider,
             IFileSorter fileSorter,
             IMediaScanner mediaScanner,
             IMetadataProvider metadataProvider)
         {
+            _dateParser = dateParser;
             _directoryProvider = directoryProvider;
             _fileSorter = fileSorter;
             _metadataProvider = metadataProvider;
@@ -52,10 +56,8 @@ namespace MediaSorter
                 if (!shouldProceed)
                     CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
 
-                Console.WriteLine($"\nSorting {mediaWithMetadata.Count} files...");
-                _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithMetadata);
-
-                CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithMetadata.Count} files. Exiting...", ConsoleColor.Green, 0);
+                var mediaWithProcessedDates = ParseMediaDatesTaken(mediaWithMetadata);
+                SortMediaFiles(outputDirectory, mediaWithProcessedDates);
             }
             catch (Exception ex)
             {
@@ -87,18 +89,34 @@ namespace MediaSorter
         {
             var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
             if (sourceDirectory is null)
-                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Green, 0);
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
 
             return sourceDirectory;
         }
 
-        private IDictionary<string, string> LoadMediaMetadata(IEnumerable<string> mediaPaths)
+        private IDictionary<string, IEnumerable<RawMetadata>> LoadMediaMetadata(IEnumerable<string> mediaPaths)
         {
             Console.WriteLine("\nLoading date metadata for {0} files...", mediaPaths.Count());
             var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
             Console.WriteLine("Date metadata loaded.");
 
             return mediaWithMetadata;
+        }
+
+        private IDictionary<string, DateMetadata> ParseMediaDatesTaken(IDictionary<string, IEnumerable<RawMetadata>> mediaWithMetadata)
+        {
+            Console.WriteLine("\nProcessing dates...");
+            var mediaWithProcessedDates = _dateParser.Parse(mediaWithMetadata);
+            Console.WriteLine("Done processing dates.");
+
+            return mediaWithProcessedDates;
+        }
+
+        private void SortMediaFiles(string outputDirectory, IDictionary<string, DateMetadata> mediaWithProcessedDates)
+        {
+            Console.WriteLine($"\nSorting {mediaWithProcessedDates.Count} files...");
+            _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithProcessedDates);
+            CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithProcessedDates.Count} files. Exiting...", ConsoleColor.Green, 0);
         }
     }
 }

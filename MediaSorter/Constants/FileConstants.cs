@@ -1,10 +1,7 @@
 ﻿namespace MediaSorter.Constants
 {
-    public static class AppConstants
+    public static class FileConstants
     {
-        public static readonly string[] ConfirmationCommands = ["Yes", "Y"];
-
-        public static readonly string[] DeclineCommands = ["No", "N"];
 
         public static readonly char[] IllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*'];
 
@@ -30,6 +27,5 @@
             ".mp4"
         ];
 
-        public static readonly string[] TerminationCommands = ["Exit", "X"];
     }
 }
