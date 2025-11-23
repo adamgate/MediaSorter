@@ -28,9 +28,6 @@ namespace MediaSorter.Services.Implementations
             return mediaWithDateMetadata;
         }
 
-        private static DateMetadata SelectMostAccurateDate(IEnumerable<DateMetadata> dateMetadata)
-            => dateMetadata.OrderByDescending(x => x.AccuracyWeight).First();
-
         private static DateMetadata Parse(RawMetadata rawMetadata)
         {
             var dateFormat = (rawMetadata.Directory) switch
@@ -48,13 +45,15 @@ namespace MediaSorter.Services.Implementations
 
             if (dateFormat.Equals("default"))
                 DateTime.TryParse(rawMetadata.Description, out dateTaken);
-
-            else 
+            else
                 DateTime.TryParseExact(rawMetadata.Description, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTaken);
 
             return new DateMetadata(rawMetadata.Directory, rawMetadata.Name, rawMetadata.Description, dateTaken, accuracyWeight);
         }
-        
+
+        private static DateMetadata SelectMostAccurateDate(IEnumerable<DateMetadata> dateMetadata)
+                    => dateMetadata.OrderByDescending(x => x.AccuracyWeight).First();
+
         private static double WeightDates(string Name, string Directory)
             => (Name.ToLower(), Directory.ToLower()) switch
             {

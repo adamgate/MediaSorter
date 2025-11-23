@@ -2,7 +2,6 @@
 {
     public static class FileConstants
     {
-
         public static readonly char[] IllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*'];
 
         public static readonly string[] SupportedMediaFormats =
@@ -26,6 +25,5 @@
             ".mov",
             ".mp4"
         ];
-
     }
 }
