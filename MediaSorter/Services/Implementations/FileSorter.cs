@@ -31,7 +31,7 @@ namespace MediaSorter.Services.Implementations
 
         private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
         {
-            var newFileName = dateTaken.Date.ToString("yyyy-MM-dd") + Path.GetExtension(mediaFile);
+            var newFileName = dateTaken.Date.ToString("yyyyMMdd") + "_" + Path.GetFileName(mediaFile);
             var yearTaken = dateTaken.Date.ToString("yyyy");
             var monthTaken = dateTaken.Date.ToString("MMMM");
 
