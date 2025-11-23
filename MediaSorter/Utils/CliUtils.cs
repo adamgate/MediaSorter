@@ -45,14 +45,14 @@ namespace MediaSorter.Utils
         public static bool GetYesNoFromUser(string message)
         {
             string? input = null;
-            while (input == null || (!CommandLineConstants.ConfirmationCommands.Contains(input) && !CommandLineConstants.DeclineCommands.Contains(input)))
+            while (input == null || (!CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !CommandLineConstants.DeclineCommands.ContainsIgnoreCase(input)))
             {
                 Console.WriteLine(message);
                 Console.Write("> ");
                 input = Console.ReadLine();
             }
 
-            return CommandLineConstants.ConfirmationCommands.Contains(input);
+            return CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input);
         }
     }
 }

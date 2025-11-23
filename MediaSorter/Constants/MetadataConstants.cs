@@ -7,5 +7,6 @@
         public const string GPS = "GPS";
         public const string ICC = "ICC";
         public const string IPTC = "IPTC";
+        public const string QuickTime = "QuickTime";
     }
 }

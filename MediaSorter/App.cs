@@ -56,12 +56,13 @@ namespace MediaSorter
                 if (!shouldProceed)
                     CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
 
-                var mediaWithProcessedDates = ParseMediaDatesTaken(mediaWithMetadata);
-                SortMediaFiles(outputDirectory, mediaWithProcessedDates);
+                var mediaWithDatesTaken = ParseMediaDatesTaken(mediaWithMetadata);
+                SortMediaFiles(outputDirectory, mediaWithDatesTaken);
             }
             catch (Exception ex)
             {
                 CliUtils.DisplayMessageAndExit($"An error occurred: {ex.Message}", ConsoleColor.Red, 1);
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Red, 0);
             }
         }
 
@@ -106,17 +107,17 @@ namespace MediaSorter
         private IDictionary<string, DateMetadata> ParseMediaDatesTaken(IDictionary<string, IEnumerable<RawMetadata>> mediaWithMetadata)
         {
             Console.WriteLine("\nProcessing dates...");
-            var mediaWithProcessedDates = _dateParser.Parse(mediaWithMetadata);
+            var mediaWithDatesTaken = _dateParser.Parse(mediaWithMetadata);
             Console.WriteLine("Done processing dates.");
 
-            return mediaWithProcessedDates;
+            return mediaWithDatesTaken;
         }
 
-        private void SortMediaFiles(string outputDirectory, IDictionary<string, DateMetadata> mediaWithProcessedDates)
+        private void SortMediaFiles(string outputDirectory, IDictionary<string, DateMetadata> mediaWithDatesTaken)
         {
-            Console.WriteLine($"\nSorting {mediaWithProcessedDates.Count} files...");
-            _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithProcessedDates);
-            CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithProcessedDates.Count} files. Exiting...", ConsoleColor.Green, 0);
+            Console.WriteLine($"\nSorting {mediaWithDatesTaken.Count} files...");
+            _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithDatesTaken);
+            CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithDatesTaken.Count} files. Exiting...", ConsoleColor.Green, 0);
         }
     }
 }
