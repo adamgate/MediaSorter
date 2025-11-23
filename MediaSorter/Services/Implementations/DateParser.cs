@@ -7,13 +7,6 @@ namespace MediaSorter.Services.Implementations
 {
     public class DateParser : IDateParser
     {
-        private const string ExifDateFormat = "yyyy:MM:dd HH:mm:ss";
-        private const string FileDateFormat = "ddd MMM dd HH:mm:ss zzz yyyy";
-        private const string GpsDateFormat = "yyyy:MM:dd";
-        private const string IccDateFormat = "yyyy:MM:dd HH:mm:ss";
-        private const string IptcDateFormat = "MM/dd/yyyy";
-        private const string QuickTimeDateFormat = "ddd MMM dd HH:mm:ss yyyy";
-
         public IDictionary<string, DateMetadata> Parse(IDictionary<string, IEnumerable<RawMetadata>> mediaPathsWithMetadata)
         {
             var mediaWithDateMetadata = new Dictionary<string, DateMetadata>();
@@ -39,13 +32,13 @@ namespace MediaSorter.Services.Implementations
         {
             var dateFormat = (rawMetadata.Directory) switch
             {
-                var directory when directory.Contains(MetadataConstants.EXIF, StringComparison.OrdinalIgnoreCase) => ExifDateFormat,
-                var directory when directory.Contains(MetadataConstants.IPTC, StringComparison.OrdinalIgnoreCase) => IptcDateFormat,
-                var directory when directory.Contains(MetadataConstants.GPS, StringComparison.OrdinalIgnoreCase) => GpsDateFormat,
-                var directory when directory.Contains(MetadataConstants.File, StringComparison.OrdinalIgnoreCase) => FileDateFormat,
-                var directory when directory.Contains(MetadataConstants.ICC, StringComparison.OrdinalIgnoreCase) => IccDateFormat,
-                var directory when directory.Contains(MetadataConstants.QuickTime, StringComparison.OrdinalIgnoreCase) => QuickTimeDateFormat,
-                _ => "default"
+                var directory when directory.Contains(MetadataConstants.EXIF, StringComparison.OrdinalIgnoreCase) => MetadataConstants.ExifDateFormat,
+                var directory when directory.Contains(MetadataConstants.IPTC, StringComparison.OrdinalIgnoreCase) => MetadataConstants.IptcDateFormat,
+                var directory when directory.Contains(MetadataConstants.GPS, StringComparison.OrdinalIgnoreCase) => MetadataConstants.GpsDateFormat,
+                var directory when directory.Contains(MetadataConstants.File, StringComparison.OrdinalIgnoreCase) => MetadataConstants.FileDateFormat,
+                var directory when directory.Contains(MetadataConstants.ICC, StringComparison.OrdinalIgnoreCase) => MetadataConstants.IccDateFormat,
+                var directory when directory.Contains(MetadataConstants.QuickTime, StringComparison.OrdinalIgnoreCase) => MetadataConstants.QuickTimeDateFormat,
+                _ => "default" // Use default DateTime parsing
             };
 
             var accuracyWeight = WeightDates(rawMetadata.Name);
@@ -60,7 +53,7 @@ namespace MediaSorter.Services.Implementations
         }
 
         private static DateMetadata SelectMostAccurateDate(IEnumerable<DateMetadata> dateMetadata)
-                    => dateMetadata.OrderByDescending(x => x.AccuracyWeight).First();
+            => dateMetadata.OrderByDescending(x => x.AccuracyWeight).First();
 
         private static double WeightDates(string Name)
             => (Name.ToLower()) switch

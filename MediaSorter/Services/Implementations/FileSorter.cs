@@ -36,7 +36,7 @@ namespace MediaSorter.Services.Implementations
         {
             var newFileName = dateTaken.Date.ToString("yyyyMMdd") + "_" + Path.GetFileName(mediaFile);
             var yearTaken = dateTaken.Date.ToString("yyyy");
-            var monthTaken = dateTaken.Date.ToString("MMMM");
+            var monthTaken = dateTaken.Date.ToString("MM MMMM");
 
             var outputDirectory = Path.Join(baseWritePath, yearTaken, monthTaken);
             FileUtils.CreateDirectoryIfDoesntExist(outputDirectory);
