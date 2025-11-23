@@ -1,7 +1,9 @@
-﻿namespace MediaSorter.Services.Interfaces
+﻿using MediaSorter.Models;
+
+namespace MediaSorter.Services.Interfaces
 {
     public interface IMetadataProvider
     {
-        IDictionary<string, string> EvaluateMediaMetadata(IEnumerable<string> media);
+        IDictionary<string, IEnumerable<RawMetadata>> EvaluateMediaMetadata(IEnumerable<string> media);
     }
 }

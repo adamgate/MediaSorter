@@ -15,10 +15,11 @@ namespace MediaSorter
             // Hosting and DI are overkill for this app, but good for practice
             var builder = Host.CreateApplicationBuilder(args);
 
-            builder.Services.AddScoped<IMediaScanner, MediaScanner>();
+            builder.Services.AddScoped<IDateParser, DateParser>();
             builder.Services.AddScoped<IDirectoryProvider, CliDirectoryProvider>();
-            builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
             builder.Services.AddScoped<IFileSorter, FileSorter>();
+            builder.Services.AddScoped<IMediaScanner, MediaScanner>();
+            builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
 
             builder.Services.AddTransient<App>();
 

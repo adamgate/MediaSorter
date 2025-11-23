@@ -35,7 +35,7 @@ namespace MediaSorter.Services.Implementations
         {
             var fileExtension = Path.GetExtension(path);
 
-            return Constants.AppConstants.SupportedMediaFormats.Any(x => x.EqualsIgnoreCase(fileExtension));
+            return Constants.FileConstants.SupportedMediaFormats.Any(x => x.EqualsIgnoreCase(fileExtension));
         }
     }
 }

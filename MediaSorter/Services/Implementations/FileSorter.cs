@@ -1,4 +1,5 @@
-﻿using MediaSorter.Services.Interfaces;
+﻿using MediaSorter.Models;
+using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
 using System.Text;
 
@@ -14,25 +15,23 @@ namespace MediaSorter.Services.Implementations
         /// </summary>
         /// <param name="writePath"></param>
         /// <param name="mediaWithMetadata"></param>
-        public void SortMediaFilesByDate(string writePath, IDictionary<string, string> mediaWithMetadata)
+        public void SortMediaFilesByDate(string writePath, IDictionary<string, DateMetadata> mediaWithMetadata)
         {
             var unknownDateWritePath = Path.Join(writePath, "unknown");
             FileUtils.CreateDirectoryIfDoesntExist(unknownDateWritePath);
 
             foreach (var media in mediaWithMetadata)
             {
-                var isParseDateTakenSuccessful = DateTime.TryParse(media.Value, out var dateTaken);
-
-                if (!isParseDateTakenSuccessful)
-                    SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value);
+                if (media.Value.DateTaken == DateTime.MinValue)
+                    SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value.Description);
                 else
-                    SaveMediaWithDate(writePath, media.Key, dateTaken);
+                    SaveMediaWithDate(writePath, media.Key, media.Value.DateTaken);
             }
         }
 
         private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
         {
-            var newFileName = dateTaken.Date.ToString("yyyy-MM-dd") + Path.GetExtension(mediaFile);
+            var newFileName = dateTaken.Date.ToString("yyyyMMdd") + "_" + Path.GetFileName(mediaFile);
             var yearTaken = dateTaken.Date.ToString("yyyy");
             var monthTaken = dateTaken.Date.ToString("MMMM");
 
