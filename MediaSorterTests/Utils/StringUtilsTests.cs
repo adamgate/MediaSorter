@@ -38,6 +38,8 @@ namespace MediaSorterTests.Utils
 
         [TestMethod]
         [DataRow(new string[] { "apple", "banana", "cherry" }, "BANANA", true)]
+        [DataRow(new string[] { "apple", "banana", "cherry" }, "bAnAnA", true)]
+        [DataRow(new string[] { "apple", "BANANA", "cherry" }, "banana", true)]
         [DataRow(new string[] { "apple", "banana", "cherry" }, "berry", false)]
         [DataRow(new string[] { "One", "Two", "Three" }, "one", true)]
         [DataRow(new string[] { "One", "Two", "Three" }, "four", false)]
