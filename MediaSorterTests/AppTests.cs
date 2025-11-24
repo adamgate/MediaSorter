@@ -11,6 +11,7 @@ namespace MediaSorterTests
     public sealed class AppTests
     {
         private readonly Fixture _fixture;
+        private Mock<IDateParser> _dateParser;
         private Mock<IDirectoryProvider> _directoryProvider;
         private Mock<IFileSorter> _fileSorter;
         private Mock<IMediaScanner> _mediaScanner;
@@ -64,11 +65,13 @@ namespace MediaSorterTests
         [TestInitialize]
         public void Setup()
         {
+            _dateParser = new();
             _directoryProvider = new();
             _fileSorter = new();
             _mediaScanner = new();
             _metadataProvider = new();
             _sut = new(
+                _dateParser.Object,
                 _directoryProvider.Object,
                 _fileSorter.Object,
                 _mediaScanner.Object,
