@@ -53,10 +53,10 @@ namespace MediaSorter.Utils
                 input = Console.ReadLine();
             }
 
-            if (!AppConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !AppConstants.DeclineCommands.ContainsIgnoreCase(input))
+            if (!CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !CommandLineConstants.DeclineCommands.ContainsIgnoreCase(input))
                 goto Loop;
 
-            return AppConstants.ConfirmationCommands.ContainsIgnoreCase(input);
+            return CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input);
         }
     }
 }

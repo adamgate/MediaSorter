@@ -40,7 +40,7 @@ namespace MediaSorter.Services.Implementations
         {
             var fileExtension = Path.GetExtension(path);
 
-            return Constants.AppConstants.SupportedMediaFormats.ContainsIgnoreCase(fileExtension);
+            return Constants.FileConstants.SupportedMediaFormats.Any(x => x.EqualsIgnoreCase(fileExtension));
         }
     }
 }

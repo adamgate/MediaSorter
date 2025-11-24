@@ -50,6 +50,6 @@ namespace MediaSorter.Utils
         /// Strips illegal file characters from the provided string.
         /// </summary>
         public static string? StripIllegalFileCharacters(string fileName) =>
-            string.Concat(fileName.Where(x => !AppConstants.IllegalFileCharacters.Contains(x)));
+            string.Concat(fileName.Where(x => !FileConstants.IllegalFileCharacters.Contains(x)));
     }
 }
