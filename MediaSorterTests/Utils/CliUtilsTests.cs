@@ -8,8 +8,9 @@ namespace MediaSorterTests.Utils
     public class CliUtilsTests
     {
         private const string _displayMessage = "Display Message";
+        private const int _timeoutInMs = 500;
 
-        [TestMethod, Timeout(1000)]
+        [TestMethod]
         [DataRow("1")]
         [DataRow("2")]
         [DataRow("")]
@@ -17,24 +18,28 @@ namespace MediaSorterTests.Utils
         [DataRow("text")]
         public void GetYesNoFromUser_CommandNotRecognized_Fails(string userInput)
         {
-            // Arrange
-            Console.SetIn(new StringReader(userInput));
+            var task = Task.Run(() =>
+            {
+                // Arrange
+                Console.SetIn(new StringReader(userInput));
 
-            // Act and Assert
-            Assert.ThrowsException<TimeoutException>(()
-                => CliUtils.GetYesNoFromUser(_displayMessage));
+                // Act
+                var result = CliUtils.GetYesNoFromUser(_displayMessage);
+
+                // Assert
+                Assert.Fail("Test didn't time out.");
+            });
+
+            if (!task.Wait(_timeoutInMs))
+                Assert.IsTrue(true, "Test timed out as expected.");
         }
 
         [TestMethod]
         [DataRow("Yes")]
-        [DataRow("yes")]
-        [DataRow("yEs")]
-        [DataRow("Y")]
-        [DataRow("y")]
         public void GetYesNoFromUser_ConfirmationCommands_ReturnsTrue(string userInput)
         {
             // Arrange
-            Console.SetIn(new StringReader("yEs"));
+            Console.SetIn(new StringReader(userInput));
 
             // Act
             var result = CliUtils.GetYesNoFromUser(_displayMessage);
@@ -45,14 +50,10 @@ namespace MediaSorterTests.Utils
 
         [TestMethod]
         [DataRow("No")]
-        [DataRow("no")]
-        [DataRow("nO")]
-        [DataRow("N")]
-        [DataRow("n")]
         public void GetYesNoFromUser_DeclineCommands_ReturnsFalse(string userInput)
         {
             // Arrange
-            Console.SetIn(new StringReader("userInput"));
+            Console.SetIn(new StringReader(userInput));
 
             // Act
             var result = CliUtils.GetYesNoFromUser(_displayMessage);

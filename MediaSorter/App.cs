@@ -61,8 +61,8 @@ namespace MediaSorter
             }
             catch (Exception ex)
             {
-                CliUtils.DisplayMessageAndExit($"An error occurred: {ex.Message}", ConsoleColor.Red, 1);
-                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Red, 0);
+                CliUtils.DisplayMessageWithColor($"An error occurred: {ex.Message}", ConsoleColor.Red);
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Red, 1);
             }
         }
 

@@ -44,19 +44,18 @@ namespace MediaSorter.Utils
         /// </summary>
         public static bool GetYesNoFromUser(string message)
         {
-        Loop:
-            string? input = null;
-            while (input is null)
+            while (true)
             {
                 Console.WriteLine(message);
                 Console.Write("> ");
-                input = Console.ReadLine();
+                var input = Console.ReadLine()?.Trim();
+
+                if (CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input))
+                    return true;
+
+                if (CommandLineConstants.DeclineCommands.ContainsIgnoreCase(input))
+                    return false;
             }
-
-            if (!CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input) && !CommandLineConstants.DeclineCommands.ContainsIgnoreCase(input))
-                goto Loop;
-
-            return CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input);
         }
     }
 }
