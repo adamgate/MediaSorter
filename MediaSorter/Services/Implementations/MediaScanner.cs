@@ -4,10 +4,15 @@ using MediaSorter.Utils;
 namespace MediaSorter.Services.Implementations
 {
     /// <summary>
-    /// Scans for all of the image and video files in the provided directory and its child directories.
+    /// Scans for valid media files.
     /// </summary>
     public class MediaScanner : IMediaScanner
     {
+        /// <summary>
+        /// Gets all supported media paths in the provided directory.
+        /// </summary>
+        /// <param name="path">The directory to scan.</param>
+        /// <returns>The file paths of media files.</returns>
         public IEnumerable<string> GetMediaInPath(string path)
         {
             return GetMediaPathsRecursively(path);

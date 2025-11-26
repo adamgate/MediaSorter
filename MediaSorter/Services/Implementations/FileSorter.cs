@@ -26,14 +26,17 @@ namespace MediaSorter.Services.Implementations
                     SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value.Description);
                 else
                     SaveMediaWithDate(writePath, media.Key, media.Value.DateTaken);
+
+                // TODO - log this so the class is decoupled from CLI 
+                CliUtils.DisplayMessageWithColor($"Sorted {Path.GetFileName(media.Key)}", ConsoleColor.Gray);
             }
         }
 
-        private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
+        private static void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
         {
             var newFileName = dateTaken.Date.ToString("yyyyMMdd") + "_" + Path.GetFileName(mediaFile);
             var yearTaken = dateTaken.Date.ToString("yyyy");
-            var monthTaken = dateTaken.Date.ToString("MMMM");
+            var monthTaken = dateTaken.Date.ToString("MM MMMM");
 
             var outputDirectory = Path.Join(baseWritePath, yearTaken, monthTaken);
             FileUtils.CreateDirectoryIfDoesntExist(outputDirectory);
@@ -42,15 +45,9 @@ namespace MediaSorter.Services.Implementations
             FileUtils.CopyFile(mediaFile, destinationFilePath);
         }
 
-        private void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
+        private static void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
         {
-            var destinationFile = new StringBuilder()
-                .Append(Path.GetFileNameWithoutExtension(mediaFile))
-                .Append(" -- ")
-                .Append(FileUtils.StripIllegalFileCharacters(newFileName))
-                .Append(Path.GetExtension(mediaFile))
-                .ToString();
-
+            var destinationFile = Path.GetFileName(mediaFile);
             var destinationFilePath = Path.Join(baseWriteFilePath, destinationFile);
 
             FileUtils.CopyFile(mediaFile, destinationFilePath);

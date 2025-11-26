@@ -1,5 +1,6 @@
 ﻿using MediaSorter.Constants;
 using MediaSorter.Services.Interfaces;
+using MediaSorter.Utils;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -8,6 +9,11 @@ namespace MediaSorter.Services.Implementations
     /// </summary>
     public class CliDirectoryProvider : IDirectoryProvider
     {
+        /// <summary>
+        /// Attempts to get a valid directory through the CLI.
+        /// </summary>
+        /// <param name="message">The message to display to the user.</param>
+        /// <returns>A <c>string</c> representing an existing directory or <c>null</c>.</returns>
         public string? GetValidDirectory(string message)
         {
             string? directory = "";
@@ -32,13 +38,15 @@ namespace MediaSorter.Services.Implementations
 
             if (File.Exists(path))
             {
-                Console.WriteLine("\"{0}\" is a file and not a directory. Please choose an existing directory.\n", path);
+                var tempMessage = string.Format("\"{0}\" is a file and not a directory. Please choose an existing directory.", path);
+                CliUtils.DisplayMessageWithColor(tempMessage, ConsoleColor.Red);
                 return null;
             }
 
             if (!Directory.Exists(path))
             {
-                Console.WriteLine("The directory \"{0}\" does not exist. Please choose an existing directory.\n", path);
+                var tempMessage = string.Format("The directory \"{0}\" does not exist. Please choose an existing directory.", path);
+                CliUtils.DisplayMessageWithColor(tempMessage, ConsoleColor.Red);
                 return null;
             }
 

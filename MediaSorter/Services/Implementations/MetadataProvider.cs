@@ -1,11 +1,13 @@
 ﻿using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
+using MediaSorter.Utils;
 using MetadataExtractor;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MediaSorter.Services.Implementations
 {
     /// <summary>
-    /// Extracts the date metadata from provided media files.
+    /// Extracts metadata from provided files.
     /// </summary>
     public class MetadataProvider : IMetadataProvider
     {
@@ -26,7 +28,7 @@ namespace MediaSorter.Services.Implementations
                 foreach (var directory in rawMetadata)
                 {
                     var directoryDateMetadata = directory.Tags
-                        .Where(x => x.Name.Contains("Date"))
+                        .Where(x => !x.Name.EqualsIgnoreCase("File Modified Date") && (x.Name.Contains("Date") || x.Name.Contains("Created")))
                         .Select(x => new RawMetadata(x.DirectoryName, x.Name, x.Description ?? ""));
 
                     mediaItemDateMetadata.AddRange(directoryDateMetadata);

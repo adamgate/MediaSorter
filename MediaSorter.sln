@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSorter", "MediaSorter\MediaSorter.csproj", "{687429A6-B285-4A7F-9BFF-E136E49A75C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaSorterTests", "MediaSorterTests\MediaSorterTests.csproj", "{CB7C226D-5121-4C66-A7FD-0A4726A2E583}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{687429A6-B285-4A7F-9BFF-E136E49A75C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{687429A6-B285-4A7F-9BFF-E136E49A75C6}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{687429A6-B285-4A7F-9BFF-E136E49A75C6}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{CB7C226D-5121-4C66-A7FD-0A4726A2E583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB7C226D-5121-4C66-A7FD-0A4726A2E583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB7C226D-5121-4C66-A7FD-0A4726A2E583}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB7C226D-5121-4C66-A7FD-0A4726A2E583}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

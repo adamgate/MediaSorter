@@ -1,4 +1,5 @@
-﻿using MediaSorter.Services.Interfaces;
+﻿using MediaSorter.Models;
+using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
 using System.Reflection;
 using System.Text;
@@ -21,8 +22,8 @@ namespace MediaSorter
             IDateParser dateParser,
             IDirectoryProvider directoryProvider,
             IFileSorter fileSorter,
-            IMetadataProvider metadataProvider,
-            IMediaScanner mediaScanner)
+            IMediaScanner mediaScanner,
+            IMetadataProvider metadataProvider)
         {
             _dateParser = dateParser;
             _directoryProvider = directoryProvider;
@@ -40,44 +41,83 @@ namespace MediaSorter
             {
                 Console.WriteLine("-------------------------------");
                 Console.WriteLine($"MEDIA SORTER v{_version}");
-                Console.WriteLine($"© {DateTime.Now.ToString("MMMM yyyy")}");
+                Console.WriteLine($"© {DateTime.Now:MMMM yyyy}");
                 Console.WriteLine("-------------------------------");
 
-                var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
-                if (sourceDirectory is null)
-                    CliUtils.DisplayMessageAndExit("Exiting...", 0);
+                var sourceDirectory = GetSourceDirectory();
+                var mediaPaths = GetMediaPaths(sourceDirectory);
+                var mediaWithMetadata = LoadMediaMetadata(mediaPaths);
 
-                Console.WriteLine("\nScanning for media...");
-                var mediaPaths = _mediaScanner.GetMediaInPath(sourceDirectory);
-
-                var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
-                if (mediaWithMetadata.Count == 0)
-                    CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", 0);
-                Console.WriteLine("Found {0} media files.", mediaWithMetadata.Count);
-
-                var outputDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder where you wish to save the sorted files:");
-                if (outputDirectory is null)
-                    CliUtils.DisplayMessageAndExit("Exiting...", 0);
+                var outputDirectory = GetOutputDirectory();
                 if (outputDirectory.Equals(sourceDirectory))
-                    CliUtils.DisplayMessageAndExit("The output directory cannot be the same as the source directory. Exiting...", 0);
+                    CliUtils.DisplayMessageAndExit("The output directory cannot be the same as the source directory. Exiting...", ConsoleColor.Yellow, 0);
 
-                var shouldProceed = CliUtils.GetYesNoFromUser("Are you sure you want to proceed? (Y/N)");
+                var shouldProceed = CliUtils.GetYesNoFromUser("\nAre you sure you want to proceed? (Y/N)");
                 if (!shouldProceed)
-                    CliUtils.DisplayMessageAndExit("Exiting...", 0);
+                    CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
 
-                Console.WriteLine("\nProcessing dates...");
-                var mediaWithProcessedDates = _dateParser.Parse(mediaWithMetadata);
-                Console.WriteLine("Done processing dates.");
-
-                Console.WriteLine($"\nSorting {mediaWithProcessedDates.Count} files...");
-                _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithProcessedDates);
-
-                CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithProcessedDates.Count} files. Exiting...", 0);
+                var mediaWithDatesTaken = ParseMediaDatesTaken(mediaWithMetadata);
+                SortMediaFiles(outputDirectory, mediaWithDatesTaken);
             }
             catch (Exception ex)
             {
-                CliUtils.DisplayMessageAndExit($"An error occurred: {ex.Message}", 1);
+                CliUtils.DisplayMessageWithColor($"An error occurred: {ex.Message}", ConsoleColor.Red);
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Red, 1);
             }
+        }
+
+        private IEnumerable<string> GetMediaPaths(string sourceDirectory)
+        {
+            Console.WriteLine("\nScanning for media...");
+            var mediaPaths = _mediaScanner.GetMediaInPath(sourceDirectory);
+            if (!mediaPaths.Any())
+                CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", ConsoleColor.Yellow, 0);
+            Console.WriteLine("Found {0} media files.", mediaPaths.Count());
+
+            return mediaPaths;
+        }
+
+        private string GetOutputDirectory()
+        {
+            var outputDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder where you wish to save the sorted files:");
+            if (outputDirectory is null)
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
+
+            return outputDirectory;
+        }
+
+        private string GetSourceDirectory()
+        {
+            var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
+            if (sourceDirectory is null)
+                CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
+
+            return sourceDirectory;
+        }
+
+        private IDictionary<string, IEnumerable<RawMetadata>> LoadMediaMetadata(IEnumerable<string> mediaPaths)
+        {
+            Console.WriteLine("\nLoading date metadata for {0} files...", mediaPaths.Count());
+            var mediaWithMetadata = _metadataProvider.EvaluateMediaMetadata(mediaPaths);
+            Console.WriteLine("Date metadata loaded.");
+
+            return mediaWithMetadata;
+        }
+
+        private IDictionary<string, DateMetadata> ParseMediaDatesTaken(IDictionary<string, IEnumerable<RawMetadata>> mediaWithMetadata)
+        {
+            Console.WriteLine("\nProcessing dates...");
+            var mediaWithDatesTaken = _dateParser.Parse(mediaWithMetadata);
+            Console.WriteLine("Done processing dates.");
+
+            return mediaWithDatesTaken;
+        }
+
+        private void SortMediaFiles(string outputDirectory, IDictionary<string, DateMetadata> mediaWithDatesTaken)
+        {
+            Console.WriteLine($"\nSorting {mediaWithDatesTaken.Count} files...");
+            _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithDatesTaken);
+            CliUtils.DisplayMessageAndExit($"\nSuccessfully sorted {mediaWithDatesTaken.Count} files. Exiting...", ConsoleColor.Green, 0);
         }
     }
 }
