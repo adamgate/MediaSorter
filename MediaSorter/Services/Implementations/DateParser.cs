@@ -1,12 +1,28 @@
 ﻿using MediaSorter.Constants;
 using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 namespace MediaSorter.Services.Implementations
 {
+    /// <summary>
+    /// Parses date metadata into DateTime.
+    /// </summary>
     public class DateParser : IDateParser
     {
+        private readonly ILogger<DateParser> _logger;
+
+        public DateParser(ILogger<DateParser> logger)
+        {
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Attempts to parse the raw metadata date strings into <see cref="DateTime"/> and selects the most accurate date for each media path.
+        /// </summary>
+        /// <param name="mediaPathsWithMetadata"></param>
+        /// <returns></returns>
         public IDictionary<string, DateMetadata> Parse(IDictionary<string, IEnumerable<RawMetadata>> mediaPathsWithMetadata)
         {
             var mediaWithDateMetadata = new Dictionary<string, DateMetadata>();
@@ -16,11 +32,15 @@ namespace MediaSorter.Services.Implementations
                 if (!media.Value.Any())
                 {
                     mediaWithDateMetadata.Add(media.Key, new DateMetadata("", "", "", DateTime.MinValue, 0));
+                    _logger.LogDebug("No date metadata found for \"{mediaPath}\"", media.Key);
                     continue;
                 }
 
                 var parsedDates = media.Value.Select(x => Parse(x)).ToList();
+                _logger.LogDebug("Media Path: \"{mediaPath}\" | {parsedDates}", media.Key, string.Join(",", parsedDates));
+
                 var mostAccurateDate = SelectMostAccurateDate(parsedDates);
+                _logger.LogDebug("Most accurate date selected for {mediaPath}: {mostAccurateDate}", media.Key, mostAccurateDate);
 
                 mediaWithDateMetadata.Add(media.Key, mostAccurateDate);
             }

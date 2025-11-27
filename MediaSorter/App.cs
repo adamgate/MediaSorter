@@ -1,6 +1,7 @@
 ﻿using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace MediaSorter
         private readonly IDateParser _dateParser;
         private readonly IDirectoryProvider _directoryProvider;
         private readonly IFileSorter _fileSorter;
+        private readonly ILogger<App> _logger;
         private readonly IMediaScanner _mediaScanner;
         private readonly IMetadataProvider _metadataProvider;
         private readonly string _version = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "X.X.X.X";
@@ -22,12 +24,14 @@ namespace MediaSorter
             IDateParser dateParser,
             IDirectoryProvider directoryProvider,
             IFileSorter fileSorter,
+            ILogger<App> logger,
             IMediaScanner mediaScanner,
             IMetadataProvider metadataProvider)
         {
             _dateParser = dateParser;
             _directoryProvider = directoryProvider;
             _fileSorter = fileSorter;
+            _logger = logger;
             _metadataProvider = metadataProvider;
             _mediaScanner = mediaScanner;
         }
@@ -58,9 +62,11 @@ namespace MediaSorter
 
                 var mediaWithDatesTaken = ParseMediaDatesTaken(mediaWithMetadata);
                 SortMediaFiles(outputDirectory, mediaWithDatesTaken);
+                _logger.LogDebug("Done sorting {count} files.", mediaWithDatesTaken.Count());
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 CliUtils.DisplayMessageWithColor($"An error occurred: {ex.Message}", ConsoleColor.Red);
                 CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Red, 1);
             }
@@ -72,7 +78,9 @@ namespace MediaSorter
             var mediaPaths = _mediaScanner.GetMediaInPath(sourceDirectory);
             if (!mediaPaths.Any())
                 CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", ConsoleColor.Yellow, 0);
+
             Console.WriteLine("Found {0} media files.", mediaPaths.Count());
+            _logger.LogDebug("Found {count} media file(s) to sort.", mediaPaths.Count());
 
             return mediaPaths;
         }
@@ -83,6 +91,8 @@ namespace MediaSorter
             if (outputDirectory is null)
                 CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
 
+            _logger.LogDebug("Output Directory: \"{directory}\"", outputDirectory);
+
             return outputDirectory;
         }
 
@@ -91,6 +101,8 @@ namespace MediaSorter
             var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
             if (sourceDirectory is null)
                 CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
+
+            _logger.LogDebug("Source Directory: \"{directory}\"", sourceDirectory);
 
             return sourceDirectory;
         }

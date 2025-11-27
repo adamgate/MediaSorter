@@ -2,6 +2,7 @@
 using MediaSorter.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace MediaSorter
 {
@@ -14,6 +15,16 @@ namespace MediaSorter
         {
             var builder = Host.CreateApplicationBuilder(args);
 
+            builder.Services.AddLogging(builder =>
+            {
+                var logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("log.txt")
+                .CreateLogger();
+
+                builder.AddSerilog(logger); // register serilog as a logging provider
+            });
+
             builder.Services.AddScoped<IDateParser, DateParser>();
             builder.Services.AddScoped<IDirectoryProvider, CliDirectoryProvider>();
             builder.Services.AddScoped<IFileSorter, FileSorter>();
@@ -23,6 +34,7 @@ namespace MediaSorter
             builder.Services.AddTransient<App>();
 
             var app = builder.Build();
+
             app.Services.GetRequiredService<App>().Run(args);
         }
     }

@@ -1,7 +1,7 @@
 ﻿using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
-using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -10,6 +10,13 @@ namespace MediaSorter.Services.Implementations
     /// </summary>
     public class FileSorter : IFileSorter
     {
+        private readonly ILogger<FileSorter> _logger;
+
+        public FileSorter(ILogger<FileSorter> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         ///  Attempts to sort media files by their taken date if possible, otherwise by their original name.
         /// </summary>
@@ -27,12 +34,11 @@ namespace MediaSorter.Services.Implementations
                 else
                     SaveMediaWithDate(writePath, media.Key, media.Value.DateTaken);
 
-                // TODO - log this so the class is decoupled from CLI 
                 CliUtils.DisplayMessageWithColor($"Sorted {Path.GetFileName(media.Key)}", ConsoleColor.Gray);
             }
         }
 
-        private static void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
+        private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
         {
             var newFileName = dateTaken.Date.ToString("yyyyMMdd") + "_" + Path.GetFileName(mediaFile);
             var yearTaken = dateTaken.Date.ToString("yyyy");
@@ -42,11 +48,13 @@ namespace MediaSorter.Services.Implementations
             FileUtils.CreateDirectoryIfDoesntExist(outputDirectory);
 
             var destinationFilePath = Path.Join(outputDirectory, newFileName);
+            _logger.LogDebug("Attempting to save \"{file}\" to \"{destination}\"", mediaFile, destinationFilePath);
             FileUtils.CopyFile(mediaFile, destinationFilePath);
         }
 
-        private static void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
+        private void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
         {
+            _logger.LogDebug("Couldn't determine date taken for {file}. Saving to \"unkown\" folder", mediaFile);
             var destinationFile = Path.GetFileName(mediaFile);
             var destinationFilePath = Path.Join(baseWriteFilePath, destinationFile);
 
