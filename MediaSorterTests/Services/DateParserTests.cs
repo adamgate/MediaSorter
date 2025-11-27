@@ -13,27 +13,6 @@ namespace MediaSorterTests.Services
         private Mock<ILogger<DateParser>> _logger;
         private DateParser _sut;
 
-        [TestInitialize]
-        public void Setup()
-        {
-            _logger = new();
-            _sut = new(_logger.Object);
-        }
-
-        [TestMethod]
-        public void Parse_NoMetadata_ReturnsDefault()
-        {
-            // Arrange 
-            var rawMetadataCollection = new List<RawMetadata>();
-            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test", rawMetadataCollection } };
-
-            // Act
-            var result = _sut.Parse(input);
-
-            // Assert
-            Assert.AreEqual(DateTime.MinValue, result.First().Value.DateTaken);
-        }
-
         private static IEnumerable<object[]> ParseMetadataTypeData
         {
             get
@@ -55,15 +34,36 @@ namespace MediaSorterTests.Services
         [DynamicData(nameof(ParseMetadataTypeData))]
         public void Parse_MetadataType_ReturnsExpected(RawMetadata rawMetadata, DateTime expectedDate)
         {
-            // Arrange 
+            // Arrange
             var rawMetadataCollection = new List<RawMetadata>() { rawMetadata };
-            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test",  rawMetadataCollection } };
+            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test", rawMetadataCollection } };
 
             // Act
             var result = _sut.Parse(input);
 
             // Assert
             Assert.AreEqual(expectedDate, result.First().Value.DateTaken, rawMetadata.Directory);
+        }
+
+        [TestMethod]
+        public void Parse_NoMetadata_ReturnsDefault()
+        {
+            // Arrange
+            var rawMetadataCollection = new List<RawMetadata>();
+            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test", rawMetadataCollection } };
+
+            // Act
+            var result = _sut.Parse(input);
+
+            // Assert
+            Assert.AreEqual(DateTime.MinValue, result.First().Value.DateTaken);
+        }
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _logger = new();
+            _sut = new(_logger.Object);
         }
     }
 }
