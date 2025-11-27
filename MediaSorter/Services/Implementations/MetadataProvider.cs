@@ -2,7 +2,7 @@
 using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
 using MetadataExtractor;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.Extensions.Logging;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -11,6 +11,13 @@ namespace MediaSorter.Services.Implementations
     /// </summary>
     public class MetadataProvider : IMetadataProvider
     {
+        private readonly ILogger<MetadataProvider> _logger;
+
+        public MetadataProvider(ILogger<MetadataProvider> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Extacts the date taken metadata from the provided media.
         /// </summary>
@@ -23,6 +30,7 @@ namespace MediaSorter.Services.Implementations
             foreach (var mediaItem in mediaPaths)
             {
                 var rawMetadata = ImageMetadataReader.ReadMetadata(mediaItem);
+                _logger.LogDebug("Raw metadata for \"{media}\" : {rawMetadata}", mediaItem, @rawMetadata);
 
                 var mediaItemDateMetadata = new List<RawMetadata>();
                 foreach (var directory in rawMetadata)

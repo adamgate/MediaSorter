@@ -1,5 +1,7 @@
 ﻿using MediaSorter.Models;
 using MediaSorter.Services.Implementations;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MediaSorterTests.Services
@@ -8,21 +10,8 @@ namespace MediaSorterTests.Services
     [ExcludeFromCodeCoverage]
     public class DateParserTests
     {
-        private DateParser _sut = new();
-
-        [TestMethod]
-        public void Parse_NoMetadata_ReturnsDefault()
-        {
-            // Arrange 
-            var rawMetadataCollection = new List<RawMetadata>();
-            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test", rawMetadataCollection } };
-
-            // Act
-            var result = _sut.Parse(input);
-
-            // Assert
-            Assert.AreEqual(DateTime.MinValue, result.First().Value.DateTaken);
-        }
+        private Mock<ILogger<DateParser>> _logger;
+        private DateParser _sut;
 
         private static IEnumerable<object[]> ParseMetadataTypeData
         {
@@ -45,15 +34,36 @@ namespace MediaSorterTests.Services
         [DynamicData(nameof(ParseMetadataTypeData))]
         public void Parse_MetadataType_ReturnsExpected(RawMetadata rawMetadata, DateTime expectedDate)
         {
-            // Arrange 
+            // Arrange
             var rawMetadataCollection = new List<RawMetadata>() { rawMetadata };
-            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test",  rawMetadataCollection } };
+            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test", rawMetadataCollection } };
 
             // Act
             var result = _sut.Parse(input);
 
             // Assert
             Assert.AreEqual(expectedDate, result.First().Value.DateTaken, rawMetadata.Directory);
+        }
+
+        [TestMethod]
+        public void Parse_NoMetadata_ReturnsDefault()
+        {
+            // Arrange
+            var rawMetadataCollection = new List<RawMetadata>();
+            var input = new Dictionary<string, IEnumerable<RawMetadata>> { { "test", rawMetadataCollection } };
+
+            // Act
+            var result = _sut.Parse(input);
+
+            // Assert
+            Assert.AreEqual(DateTime.MinValue, result.First().Value.DateTaken);
+        }
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _logger = new();
+            _sut = new(_logger.Object);
         }
     }
 }

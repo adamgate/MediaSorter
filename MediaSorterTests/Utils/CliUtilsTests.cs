@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace MediaSorterTests.Utils
 {
     [TestClass]
-    [ExcludeFromCodeCoverage] 
+    [ExcludeFromCodeCoverage]
     public class CliUtilsTests
     {
         private const string _displayMessage = "Display Message";
