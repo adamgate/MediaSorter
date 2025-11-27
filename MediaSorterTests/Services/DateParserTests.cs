@@ -1,5 +1,7 @@
 ﻿using MediaSorter.Models;
 using MediaSorter.Services.Implementations;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MediaSorterTests.Services
@@ -8,7 +10,15 @@ namespace MediaSorterTests.Services
     [ExcludeFromCodeCoverage]
     public class DateParserTests
     {
-        private DateParser _sut = new();
+        private Mock<ILogger<DateParser>> _logger;
+        private DateParser _sut;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _logger = new();
+            _sut = new(_logger.Object);
+        }
 
         [TestMethod]
         public void Parse_NoMetadata_ReturnsDefault()
