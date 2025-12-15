@@ -11,8 +11,6 @@ namespace MediaSorter.Services.Implementations
         /// <summary>
         /// Gets all supported media paths in the provided directory.
         /// </summary>
-        /// <param name="path">The directory to scan.</param>
-        /// <returns>The file paths of media files.</returns>
         public IEnumerable<string> GetMediaInPath(string path)
         {
             return GetMediaPathsRecursively(path);
@@ -26,12 +24,16 @@ namespace MediaSorter.Services.Implementations
             foreach (string filePath in fileEntries)
             {
                 if (ShouldProcessFile(filePath))
+                {
                     mediaPaths.Add(filePath);
+                }
             }
 
             string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
             foreach (string subdirectory in subdirectoryEntries)
+            {
                 mediaPaths.AddRange(GetMediaPathsRecursively(subdirectory));
+            }
 
             return mediaPaths;
         }

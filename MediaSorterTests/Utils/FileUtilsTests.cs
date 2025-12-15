@@ -1,4 +1,5 @@
-﻿using MediaSorter.Utils;
+﻿using MediaSorter.Constants;
+using MediaSorter.Utils;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MediaSorterTests.Utils
@@ -23,7 +24,7 @@ namespace MediaSorterTests.Utils
             // Arrange
 
             // Act
-            var result = FileUtils.StripIllegalFileCharacters(input);
+            var result = FileUtils.StripIllegalCharacters(input, FileConstants.WindowsIllegalFileCharacters);
 
             // Assert
             Assert.AreEqual(expected, result);

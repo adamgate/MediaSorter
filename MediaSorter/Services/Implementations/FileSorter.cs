@@ -1,6 +1,7 @@
 ﻿using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
+
 using Microsoft.Extensions.Logging;
 
 namespace MediaSorter.Services.Implementations
@@ -20,19 +21,22 @@ namespace MediaSorter.Services.Implementations
         /// <summary>
         ///  Attempts to sort media files by their taken date if possible, otherwise by their original name.
         /// </summary>
-        /// <param name="writePath"></param>
-        /// <param name="mediaWithMetadata"></param>
         public void SortMediaFilesByDate(string writePath, IDictionary<string, DateMetadata> mediaWithMetadata)
         {
             var unknownDateWritePath = Path.Join(writePath, "unknown");
             FileUtils.CreateDirectoryIfDoesntExist(unknownDateWritePath);
 
+            // TODO - multithread this
             foreach (var media in mediaWithMetadata)
             {
                 if (media.Value.DateTaken == DateTime.MinValue)
+                {
                     SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value.Description);
+                }
                 else
+                {
                     SaveMediaWithDate(writePath, media.Key, media.Value.DateTaken);
+                }
 
                 CliUtils.DisplayMessageWithColor($"Sorted {Path.GetFileName(media.Key)}", ConsoleColor.Gray);
             }

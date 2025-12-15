@@ -12,16 +12,18 @@ namespace MediaSorter.Services.Implementations
         /// <summary>
         /// Attempts to get a valid directory through the CLI.
         /// </summary>
-        /// <param name="message">The message to display to the user.</param>
-        /// <returns>A <c>string</c> representing an existing directory or <c>null</c>.</returns>
         public string? GetValidDirectory(string message)
         {
             string? directory = "";
             while (string.IsNullOrEmpty(directory))
+            {
                 directory = LoopUntilAcceptableInput(message);
+            }
 
             if (CommandLineConstants.TerminationCommands.Contains(directory))
+            {
                 return null;
+            }
 
             return directory;
         }
@@ -34,7 +36,9 @@ namespace MediaSorter.Services.Implementations
             var path = Console.ReadLine();
 
             if (CommandLineConstants.TerminationCommands.Contains(path))
+            {
                 return path;
+            }
 
             if (File.Exists(path))
             {

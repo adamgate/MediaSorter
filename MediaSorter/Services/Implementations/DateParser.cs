@@ -1,8 +1,10 @@
-﻿using MediaSorter.Constants;
+﻿using System.Globalization;
+
+using MediaSorter.Constants;
 using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
+
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -21,8 +23,6 @@ namespace MediaSorter.Services.Implementations
         /// <summary>
         /// Attempts to parse the raw metadata date strings into <see cref="DateTime"/> and selects the most accurate date for each media path.
         /// </summary>
-        /// <param name="mediaPathsWithMetadata"></param>
-        /// <returns></returns>
         public IDictionary<string, DateMetadata> Parse(IDictionary<string, IEnumerable<RawMetadata>> mediaPathsWithMetadata)
         {
             var mediaWithDateMetadata = new Dictionary<string, DateMetadata>();
@@ -65,9 +65,13 @@ namespace MediaSorter.Services.Implementations
             var dateTaken = DateTime.MinValue;
 
             if (dateFormat.Equals("default"))
+            {
                 DateTime.TryParse(rawMetadata.Description, out dateTaken);
+            }
             else
+            {
                 DateTime.TryParseExact(rawMetadata.Description, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTaken);
+            }
 
             return new DateMetadata(rawMetadata.Directory, rawMetadata.Name, rawMetadata.Description, dateTaken, accuracyWeight);
         }
