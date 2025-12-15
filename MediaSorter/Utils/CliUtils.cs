@@ -51,10 +51,14 @@ namespace MediaSorter.Utils
                 var input = Console.ReadLine()?.Trim();
 
                 if (CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input))
+                {
                     return true;
+                }
 
                 if (CommandLineConstants.DeclineCommands.ContainsIgnoreCase(input))
+                {
                     return false;
+                }
             }
         }
     }

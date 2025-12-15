@@ -1,9 +1,11 @@
-﻿using MediaSorter.Models;
+﻿using System.Reflection;
+using System.Text;
+
+using MediaSorter.Models;
 using MediaSorter.Services.Interfaces;
 using MediaSorter.Utils;
+
 using Microsoft.Extensions.Logging;
-using System.Reflection;
-using System.Text;
 
 namespace MediaSorter
 {
@@ -54,11 +56,15 @@ namespace MediaSorter
 
                 var outputDirectory = GetOutputDirectory();
                 if (outputDirectory.Equals(sourceDirectory))
-                    CliUtils.DisplayMessageAndExit("The output directory cannot be the same as the source directory. Exiting...", ConsoleColor.Yellow, 0);
+                {
+                    CliUtils.DisplayMessageAndExit("The output folder cannot be the same as the source folder. Exiting...", ConsoleColor.Yellow, 0);
+                }
 
-                var shouldProceed = CliUtils.GetYesNoFromUser("\nAre you sure you want to proceed? (Y/N)");
+                var shouldProceed = CliUtils.GetYesNoFromUser("\nDo you want to proceed? (Y/N)");
                 if (!shouldProceed)
+                {
                     CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
+                }
 
                 var mediaWithDatesTaken = ParseMediaDatesTaken(mediaWithMetadata);
                 SortMediaFiles(outputDirectory, mediaWithDatesTaken);
@@ -77,7 +83,9 @@ namespace MediaSorter
             Console.WriteLine("\nScanning for media...");
             var mediaPaths = _mediaScanner.GetMediaInPath(sourceDirectory);
             if (!mediaPaths.Any())
+            {
                 CliUtils.DisplayMessageAndExit("No media files were found. Exiting...", ConsoleColor.Yellow, 0);
+            }
 
             Console.WriteLine("Found {0} media files.", mediaPaths.Count());
             _logger.LogDebug("Found {count} media file(s) to sort.", mediaPaths.Count());
@@ -89,7 +97,9 @@ namespace MediaSorter
         {
             var outputDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder where you wish to save the sorted files:");
             if (outputDirectory is null)
+            {
                 CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
+            }
 
             _logger.LogDebug("Output Directory: \"{directory}\"", outputDirectory);
 
@@ -100,7 +110,9 @@ namespace MediaSorter
         {
             var sourceDirectory = _directoryProvider.GetValidDirectory("\nPlease enter the path of the folder you wish to sort:");
             if (sourceDirectory is null)
+            {
                 CliUtils.DisplayMessageAndExit("Exiting...", ConsoleColor.Yellow, 0);
+            }
 
             _logger.LogDebug("Source Directory: \"{directory}\"", sourceDirectory);
 

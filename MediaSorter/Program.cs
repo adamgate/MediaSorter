@@ -1,7 +1,9 @@
 ﻿using MediaSorter.Services.Implementations;
 using MediaSorter.Services.Interfaces;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Serilog;
 
 namespace MediaSorter

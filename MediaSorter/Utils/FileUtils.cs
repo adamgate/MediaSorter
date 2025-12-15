@@ -1,4 +1,4 @@
-﻿using MediaSorter.Constants;
+﻿using System.Text;
 
 namespace MediaSorter.Utils
 {
@@ -7,6 +7,7 @@ namespace MediaSorter.Utils
     /// </summary>
     public static class FileUtils
     {
+        // TODO - move to File Service for testing & logging functionality
         /// <summary>
         /// Attempts to copy a file to the provided destination.
         /// </summary>
@@ -18,14 +19,20 @@ namespace MediaSorter.Utils
             }
             catch (Exception ex)
             {
-                string errorMessage = string.Empty;
+                string errorMessage;
 
                 if (ex is FileNotFoundException)
+                {
                     errorMessage = $"Could not find the source file \"{sourceFileName}\" to copy";
+                }
                 else if (ex is DirectoryNotFoundException)
+                {
                     errorMessage = $"Destination folder \"{Path.GetDirectoryName(destinationFileName)}\" does not exist for file \"{Path.GetFileName(destinationFileName)}\"";
+                }
                 else if (ex is IOException)
+                {
                     errorMessage = $"Destination file \"{destinationFileName}\" already exists.";
+                }
                 else
                 {
                     errorMessage = $"An unexpected error occurred: {ex.Message}";
@@ -37,19 +44,31 @@ namespace MediaSorter.Utils
             }
         }
 
+        // TODO - move to File Service for testing & logging functionality
         /// <summary>
         /// Creates a directory if it doesn't already exist.
         /// </summary>
         public static void CreateDirectoryIfDoesntExist(string path)
         {
             if (!Directory.Exists(path))
+            {
                 Directory.CreateDirectory(path);
+            }
         }
 
         /// <summary>
-        /// Strips illegal file characters from the provided string.
+        /// Strips illegal characters from the provided string.
         /// </summary>
-        public static string? StripIllegalFileCharacters(string fileName) =>
-            string.Concat(fileName.Where(x => !FileConstants.IllegalFileCharacters.Contains(x)));
+        public static string StripIllegalCharacters(this string fileName, IEnumerable<char> illegalCharacters)
+        {
+            var stringBuilder = new StringBuilder(fileName);
+
+            foreach (var character in illegalCharacters)
+            {
+                stringBuilder.Replace(character.ToString(), "");
+            }
+
+            return stringBuilder.ToString();
+        }
     }
 }

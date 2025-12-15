@@ -2,7 +2,7 @@
 {
     public static class FileConstants
     {
-        public static readonly char[] IllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*']; // Windows specific
+        public static readonly char[] WindowsIllegalFileCharacters = ['/', '\\', '.', '<', '>', ':', '"', '|', '?', '*'];
 
         public static readonly string[] SupportedMediaFormats =
                                 [
