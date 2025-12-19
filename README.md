@@ -4,10 +4,10 @@ A command-line application that organizes image and video files into folders bas
 
 ## Features
 
-- Extracts date information from media metadata (EXIF, IPTC, GPS, QuickTime)
+- Extracts date information from media metadata
 - Organizes files into YYYY/MM Month folder structure
-- Copies files safely, preserving originals
-- Handles files without date metadata separately
+- Copies files safely, preserving original files
+- Stores files without date metadata in an "unknown" folder
 
 ## Supported File Types
 
@@ -32,14 +32,15 @@ Files are scanned recursively and organized by their capture date.
 
 ## Output Structure
 ```
-destination/
-├── 2024/
-│   ├── 01 January/
+destination
+├── 2024
+│   ├── 01 January
 │   │   ├── 20240115_image.jpg
 │   │   └── 20240120_video.mp4
-│   └── 12 December/
+|   └── ...
+│   └── 12 December
 │       └── 20241225_photo.png
-└── unknown/
+└── unknown
     └── no_metadata.jpg
 ```
 
