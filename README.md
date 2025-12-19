@@ -1,4 +1,7 @@
 # MediaSorter
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](License.txt)
+[![.NET](https://img.shields.io/badge/.NET-8.0-purple?style=flat-square)]()
+[![Windows](https://img.shields.io/badge/Windows_11-gray?style=flat-square)]()
 
 A command-line application that organizes image and video files into folders based on the date they were taken.
 
