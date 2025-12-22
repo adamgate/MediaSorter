@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
+using Spectre.Console;
+
 namespace MediaSorter
 {
     /// <summary>
@@ -26,6 +28,8 @@ namespace MediaSorter
 
                 builder.AddSerilog(logger); // register serilog as a logging provider
             });
+
+            builder.Services.AddSingleton(AnsiConsole.Console);
 
             builder.Services.AddScoped<IDateParser, DateParser>();
             builder.Services.AddScoped<IDirectoryProvider, CliDirectoryProvider>();

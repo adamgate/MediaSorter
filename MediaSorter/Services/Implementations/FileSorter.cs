@@ -21,7 +21,7 @@ namespace MediaSorter.Services.Implementations
         /// <summary>
         ///  Attempts to sort media files by their taken date if possible, otherwise by their original name.
         /// </summary>
-        public void SortMediaFilesByDate(string writePath, IDictionary<string, DateMetadata> mediaWithMetadata)
+        public IEnumerable<(string, bool, string)> SortMediaFilesByDate(string writePath, IDictionary<string, DateMetadata> mediaWithMetadata)
         {
             var unknownDateWritePath = Path.Join(writePath, "unknown");
             FileUtils.CreateDirectoryIfDoesntExist(unknownDateWritePath);
@@ -29,20 +29,23 @@ namespace MediaSorter.Services.Implementations
             // TODO - multithread this
             foreach (var media in mediaWithMetadata)
             {
+                (bool, string) copyStatus = new();
                 if (media.Value.DateTaken == DateTime.MinValue)
                 {
-                    SaveMediaWithUnknownDate(unknownDateWritePath, media.Key, media.Value.Description);
+                    copyStatus = SaveMediaWithUnknownDate(unknownDateWritePath, media.Key);
                 }
                 else
                 {
-                    SaveMediaWithDate(writePath, media.Key, media.Value.DateTaken);
+                    copyStatus = SaveMediaWithDate(writePath, media.Key, media.Value.DateTaken);
                 }
 
-                CliUtils.DisplayMessageWithColor($"Sorted {Path.GetFileName(media.Key)}", ConsoleColor.Gray);
+                _logger.LogDebug("\"{mediaFile}\" sorting status: {success}. Message: {message}", media.Key, copyStatus.Item1 ? "Successful" : "Unsuccesful", copyStatus.Item2);
+
+                yield return new(media.Key, copyStatus.Item1, copyStatus.Item2);
             }
         }
 
-        private void SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
+        private (bool, string) SaveMediaWithDate(string baseWritePath, string mediaFile, DateTime dateTaken)
         {
             var newFileName = dateTaken.Date.ToString("yyyyMMdd") + "_" + Path.GetFileName(mediaFile);
             var yearTaken = dateTaken.Date.ToString("yyyy");
@@ -53,16 +56,17 @@ namespace MediaSorter.Services.Implementations
 
             var destinationFilePath = Path.Join(outputDirectory, newFileName);
             _logger.LogDebug("Attempting to save \"{file}\" to \"{destination}\"", mediaFile, destinationFilePath);
-            FileUtils.CopyFile(mediaFile, destinationFilePath);
+
+            return FileUtils.CopyFile(mediaFile, destinationFilePath);
         }
 
-        private void SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile, string newFileName)
+        private (bool, string) SaveMediaWithUnknownDate(string baseWriteFilePath, string mediaFile)
         {
             _logger.LogDebug("Couldn't determine date taken for {file}. Saving to \"unkown\" folder", mediaFile);
             var destinationFile = Path.GetFileName(mediaFile);
             var destinationFilePath = Path.Join(baseWriteFilePath, destinationFile);
 
-            FileUtils.CopyFile(mediaFile, destinationFilePath);
+            return FileUtils.CopyFile(mediaFile, destinationFilePath);
         }
     }
 }
