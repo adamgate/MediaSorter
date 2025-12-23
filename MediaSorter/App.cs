@@ -43,9 +43,11 @@ namespace MediaSorter
         {
             try
             {
-                var rule = new Rule($"[teal]MEDIA SORTER[/] v{_version}").LeftJustified();
+                AnsiConsole.Clear();
+                var rule = new Rule($"[bold orange1]MEDIA SORTER[/] [dim]v{_version}[/]")
+                    .RuleStyle("orange1")
+                    .LeftJustified();
                 AnsiConsole.Write(rule);
-                //AnsiConsole.MarkupLine($":copyright: {DateTime.Now:MMMM yyyy}");
 
                 var sourceDirectory = GetSourceDirectory();
                 var mediaPaths = GetMediaPaths(sourceDirectory);
@@ -58,7 +60,7 @@ namespace MediaSorter
                 }
 
                 AnsiConsole.WriteLine();
-                var shouldProceed = CliUtils.GetYesNoFromUser("Do you want to [green]proceed[/]?");
+                var shouldProceed = CliUtils.GetYesNoFromUser("Do you want to [bold orange1]proceed[/]?");
                 if (!shouldProceed)
                 {
                     CliUtils.DisplayMessageAndExit("Exiting...", "yellow", 0);
@@ -82,6 +84,7 @@ namespace MediaSorter
 
             AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
+                .SpinnerStyle("orange1")
                 .Start("[orange1]Scanning for media...[/]", ctx =>
                 {
                     Thread.Sleep(3000);
@@ -96,17 +99,19 @@ namespace MediaSorter
             _logger.LogDebug("Found {count} media file(s) to sort.", mediaPaths.Count());
 
             var table = new Table()
-                .Title("Media Files Found").LeftAligned()
-                .AddColumn("Media Files")
-                .Caption($"{mediaPaths.Count} Files Found").LeftAligned();
+                .BorderColor(Color.Orange1)
+                .LeftAligned()
+                .AddColumn($"[bold orange1]Media Files Found [dim]({mediaPaths.Count})[/][/]")
+                .LeftAligned();
+            table.Columns[0].LeftAligned();
 
             foreach (var media in mediaPaths)
             {
                 var textPath = new TextPath(media)
-                    .RootStyle(new Style(foreground: Color.Green))
-                    .SeparatorStyle(new Style(foreground: Color.Red))
+                    .RootStyle(new Style(foreground: Color.Orange3))
+                    .SeparatorStyle(new Style(foreground: Color.Grey))
                     .StemStyle(new Style(foreground: Color.Yellow))
-                    .LeafStyle(new Style(foreground: Color.Purple));
+                    .LeafStyle(new Style(foreground: Color.White));
                 table.AddRow(textPath);
             }
 
@@ -118,7 +123,7 @@ namespace MediaSorter
         private string GetOutputDirectory()
         {
             AnsiConsole.WriteLine();
-            var outputDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder where you wish to save the sorted files:");
+            var outputDirectory = _directoryProvider.GetValidDirectory("[yellow]Please enter the path of the folder where you wish to save the sorted files:[/]");
             if (outputDirectory is null)
             {
                 CliUtils.DisplayMessageAndExit("Exiting...", "yellow", 0);
@@ -132,7 +137,7 @@ namespace MediaSorter
         private string GetSourceDirectory()
         {
             AnsiConsole.WriteLine();
-            var sourceDirectory = _directoryProvider.GetValidDirectory("Please enter the path of the folder you wish to sort:");
+            var sourceDirectory = _directoryProvider.GetValidDirectory("[yellow]Please enter the path of the folder you wish to sort:[/]");
             if (sourceDirectory is null)
             {
                 CliUtils.DisplayMessageAndExit("Exiting...", "yellow", 0);
@@ -149,6 +154,7 @@ namespace MediaSorter
 
             AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
+                .SpinnerStyle("orange1")
                 .Start("[orange1]Processing date metadata...[/]", ctx =>
                 {
                     Thread.Sleep(3000);
@@ -156,7 +162,7 @@ namespace MediaSorter
                 });
 
             AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine("Date metadata loaded.");
+            AnsiConsole.MarkupLine("[bold green]Date metadata loaded.[/]");
 
             return mediaWithMetadata;
         }
@@ -168,13 +174,14 @@ namespace MediaSorter
             AnsiConsole.WriteLine();
             AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
+                .SpinnerStyle("orange1")
                 .Start("[orange1]Processing dates...[/]", ctx =>
                 {
                     Thread.Sleep(3000);
                     mediaWithDatesTaken = _dateParser.Parse(mediaWithMetadata);
                 });
 
-            AnsiConsole.MarkupLine("Done processing dates.");
+            AnsiConsole.MarkupLine("[bold green]Done processing dates.[/]");
 
             return mediaWithDatesTaken;
         }
@@ -189,21 +196,20 @@ namespace MediaSorter
                 .Columns(
                     new TaskDescriptionColumn(),
                     new ProgressBarColumn(),
-                    new PercentageColumn()
+                    new PercentageColumn(),
+                    new SpinnerColumn(Spinner.Known.Dots)
                 )
                 .Start(ctx =>
                 {
-                    var task = ctx.AddTask($"Sorting [yellow]{mediaWithDatesTaken.Count}[/] files...", maxValue: mediaWithDatesTaken.Count);
+                    var task = ctx.AddTask($"[orange1]Sorting[/] [yellow]{mediaWithDatesTaken.Count}[/] [orange1]files...[/]", maxValue: mediaWithDatesTaken.Count);
 
                     var count = 0;
                     foreach (var result in _fileSorter.SortMediaFilesByDate(outputDirectory, mediaWithDatesTaken))
                     {
                         count++;
-                        task.Description = $"[yellow]Sorted [green]{count}[/]/{mediaWithDatesTaken.Count} items[/]";
+                        task.Description = $"[orange1]Sorted [gray]{count}[/][dim]/[/][bold orange1]{mediaWithDatesTaken.Count}[/] files[/]";
                         copyStatus.Add(result);
                         task.Increment(1);
-                        //task.Percentage = 100 / mediaWithDatesTaken.Count;
-                        Thread.Sleep(15);
                     }
 
                     Thread.Sleep(2000);
@@ -211,7 +217,8 @@ namespace MediaSorter
                 });
 
             var table = new Table()
-                .Title("Status of Sorted Files").LeftAligned()
+                .Title("[bold orange1]Status of Sorted Files[/]")
+                .BorderColor(Color.Orange1)
                 .AddColumn("[orange1]File[/]")
                 .AddColumn("[orange1]Copy Status[/]")
                 .AddColumn("[orange1]Message[/]");
@@ -219,19 +226,19 @@ namespace MediaSorter
             foreach (var status in copyStatus)
             {
                 var mediaTextPath = new TextPath(status.Item1)
-                    .RootStyle(new Style(foreground: Color.Green))
-                    .SeparatorStyle(new Style(foreground: Color.Red))
+                    .RootStyle(new Style(foreground: Color.Orange3))
+                    .SeparatorStyle(new Style(foreground: Color.Grey))
                     .StemStyle(new Style(foreground: Color.Yellow))
-                    .LeafStyle(new Style(foreground: Color.Purple));
+                    .LeafStyle(new Style(foreground: Color.White));
 
-                var successStatus = status.Item2 ? "[green]Successful[/]" : "[red]Unsuccessful[/]";
+                var successStatus = status.Item2 ? "[green]Successful[/]" : "[red]Failed[/]";
 
                 table.AddRow(mediaTextPath, new Markup(successStatus), new Text(status.Item3));
             }
 
             AnsiConsole.Write(table);
 
-            CliUtils.DisplayMessageAndExit($"Successfully sorted [yellow]{mediaWithDatesTaken.Count}[/] files. Exiting...", "green", 0);
+            CliUtils.DisplayMessageAndExit($"Successfully sorted [orange1]{mediaWithDatesTaken.Count}[/] files. Exiting...", "green", 0);
         }
     }
 }

@@ -40,10 +40,12 @@ namespace MediaSorter.Utils
         /// </summary>
         public static bool GetYesNoFromUser(string message)
         {
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
+            var selectionPrompt = new SelectionPrompt<string>()
                     .Title(message)
-                    .AddChoices(["Yes", "No"]));
+                    .AddChoices(["Yes", "No"]);
+            selectionPrompt.HighlightStyle("bold orange1");
+
+            var choice = AnsiConsole.Prompt(selectionPrompt);
 
             return choice.EqualsIgnoreCase("Yes");
         }
