@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishTrimmed>True</PublishTrimmed>
     <SignAssembly>False</SignAssembly>
     <Description>A simple app that sorts images and videos into folders based on the date they were taken.</Description>
     <PackageProjectUrl>https://github.com/adamgate/MediaSorter</PackageProjectUrl>
-    <AssemblyVersion>1.1.4.2</AssemblyVersion>
-    <FileVersion>1.1.4.2</FileVersion>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
+    <FileVersion>1.2.1.0</FileVersion>
     <ApplicationIcon>Resources\collection.ico</ApplicationIcon>
     <PackageIcon>collection.png</PackageIcon>
   </PropertyGroup>
@@ -34,7 +34,6 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
-    <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

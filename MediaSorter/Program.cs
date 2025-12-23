@@ -15,9 +15,9 @@ namespace MediaSorter
     /// </summary>
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-            var builder = Host.CreateApplicationBuilder(args);
+            var builder = Host.CreateApplicationBuilder();
 
             builder.Services.AddLogging(builder =>
             {
@@ -41,7 +41,7 @@ namespace MediaSorter
 
             var app = builder.Build();
 
-            app.Services.GetRequiredService<App>().Run(args);
+            app.Services.GetRequiredService<App>().Run();
         }
     }
 }

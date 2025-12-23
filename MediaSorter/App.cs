@@ -39,7 +39,7 @@ namespace MediaSorter
             _mediaScanner = mediaScanner;
         }
 
-        public void Run(string[] args)
+        public void Run()
         {
             try
             {
