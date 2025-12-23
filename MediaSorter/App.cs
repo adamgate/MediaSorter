@@ -196,8 +196,7 @@ namespace MediaSorter
                 .Columns(
                     new TaskDescriptionColumn(),
                     new ProgressBarColumn(),
-                    new PercentageColumn(),
-                    new SpinnerColumn(Spinner.Known.Dots)
+                    new PercentageColumn()
                 )
                 .Start(ctx =>
                 {
@@ -238,7 +237,7 @@ namespace MediaSorter
 
             AnsiConsole.Write(table);
 
-            CliUtils.DisplayMessageAndExit($"Successfully sorted [orange1]{mediaWithDatesTaken.Count}[/] files. Exiting...", "green", 0);
+            CliUtils.DisplayMessageAndExit($"Successfully sorted [gray]{copyStatus.Where(x => x.Item2).Count()}[/][dim]/[/][bold orange1]{mediaWithDatesTaken.Count}[/] files. Exiting...", "orange1", 0);
         }
     }
 }
