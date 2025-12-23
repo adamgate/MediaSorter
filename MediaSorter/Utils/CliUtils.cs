@@ -1,4 +1,4 @@
-﻿using MediaSorter.Constants;
+﻿using Spectre.Console;
 
 namespace MediaSorter.Utils
 {
@@ -12,7 +12,7 @@ namespace MediaSorter.Utils
         /// </summary>
         public static void DisplayMessageAndExit(string message, int exitCode)
         {
-            Console.WriteLine(message);
+            AnsiConsole.MarkupLine(message);
             Console.ReadLine();
             Environment.Exit(exitCode);
         }
@@ -20,7 +20,7 @@ namespace MediaSorter.Utils
         /// <summary>
         /// Prints a message in the provided foreground color and then exits the program with the provided exit code.
         /// </summary>
-        public static void DisplayMessageAndExit(string message, ConsoleColor foregroundColor, int exitCode)
+        public static void DisplayMessageAndExit(string message, string foregroundColor, int exitCode)
         {
             DisplayMessageWithColor(message, foregroundColor);
             Console.ReadLine();
@@ -30,13 +30,9 @@ namespace MediaSorter.Utils
         /// <summary>
         /// Prints a message in the provided foreground color, then reverts the color back to the original.
         /// </summary>
-        public static void DisplayMessageWithColor(string message, ConsoleColor foregroundColor)
+        public static void DisplayMessageWithColor(string message, string foregroundColor)
         {
-            var originalColor = Console.ForegroundColor;
-
-            Console.ForegroundColor = foregroundColor;
-            Console.WriteLine(message);
-            Console.ForegroundColor = originalColor;
+            AnsiConsole.MarkupLine($"[{foregroundColor}]{message}[/]");
         }
 
         /// <summary>
@@ -44,22 +40,14 @@ namespace MediaSorter.Utils
         /// </summary>
         public static bool GetYesNoFromUser(string message)
         {
-            while (true)
-            {
-                Console.WriteLine(message);
-                Console.Write("> ");
-                var input = Console.ReadLine()?.Trim();
+            var selectionPrompt = new SelectionPrompt<string>()
+                    .Title(message)
+                    .AddChoices(["Yes", "No"]);
+            selectionPrompt.HighlightStyle("bold orange1");
 
-                if (CommandLineConstants.ConfirmationCommands.ContainsIgnoreCase(input))
-                {
-                    return true;
-                }
+            var choice = AnsiConsole.Prompt(selectionPrompt);
 
-                if (CommandLineConstants.DeclineCommands.ContainsIgnoreCase(input))
-                {
-                    return false;
-                }
-            }
+            return choice.EqualsIgnoreCase("Yes");
         }
     }
 }

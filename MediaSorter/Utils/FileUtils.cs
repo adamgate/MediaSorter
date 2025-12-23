@@ -11,7 +11,7 @@ namespace MediaSorter.Utils
         /// <summary>
         /// Attempts to copy a file to the provided destination.
         /// </summary>
-        public static void CopyFile(string sourceFileName, string destinationFileName)
+        public static (bool, string) CopyFile(string sourceFileName, string destinationFileName)
         {
             try
             {
@@ -36,12 +36,14 @@ namespace MediaSorter.Utils
                 else
                 {
                     errorMessage = $"An unexpected error occurred: {ex.Message}";
-                    CliUtils.DisplayMessageWithColor(errorMessage, ConsoleColor.Red);
+                    CliUtils.DisplayMessageWithColor(errorMessage, "red");
                     throw;
                 }
 
-                CliUtils.DisplayMessageWithColor(errorMessage, ConsoleColor.Red);
+                return new(false, errorMessage);
             }
+
+            return new(true, $"Copied to {destinationFileName}");
         }
 
         // TODO - move to File Service for testing & logging functionality

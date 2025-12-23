@@ -4,6 +4,6 @@ namespace MediaSorter.Services.Interfaces
 {
     public interface IFileSorter
     {
-        void SortMediaFilesByDate(string path, IDictionary<string, DateMetadata> mediaWithMetadata);
+        IEnumerable<(string, bool, string)> SortMediaFilesByDate(string path, IDictionary<string, DateMetadata> mediaWithMetadata);
     }
 }

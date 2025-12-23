@@ -1,6 +1,7 @@
 ﻿using MediaSorter.Constants;
 using MediaSorter.Services.Interfaces;
-using MediaSorter.Utils;
+
+using Spectre.Console;
 
 namespace MediaSorter.Services.Implementations
 {
@@ -30,10 +31,9 @@ namespace MediaSorter.Services.Implementations
 
         private static string? LoopUntilAcceptableInput(string message)
         {
-            Console.WriteLine(message);
-            Console.WriteLine("(You can type \"exit\" to close the app)");
-            Console.Write("> ");
-            var path = Console.ReadLine();
+            var path = AnsiConsole.Prompt(
+                new TextPrompt<string>(message)
+            );
 
             if (CommandLineConstants.TerminationCommands.Contains(path))
             {
@@ -42,15 +42,17 @@ namespace MediaSorter.Services.Implementations
 
             if (File.Exists(path))
             {
-                var tempMessage = string.Format("\"{0}\" is a file and not a directory. Please choose an existing directory.", path);
-                CliUtils.DisplayMessageWithColor(tempMessage, ConsoleColor.Red);
+                AnsiConsole.MarkupLine($"[red]\"{path}\" is a file and not a directory. Please choose an existing directory.[/]");
+                //var tempMessage = string.Format("\"{0}\" is a file and not a directory. Please choose an existing directory.", path);
+                //CliUtils.DisplayMessageWithColor(tempMessage, ConsoleColor.Red);
                 return null;
             }
 
             if (!Directory.Exists(path))
             {
-                var tempMessage = string.Format("The directory \"{0}\" does not exist. Please choose an existing directory.", path);
-                CliUtils.DisplayMessageWithColor(tempMessage, ConsoleColor.Red);
+                AnsiConsole.MarkupLine($"[red]The directory \"{path}\" does not exist. Please choose an existing directory.[/]");
+                //var tempMessage = string.Format("The directory \"{0}\" does not exist. Please choose an existing directory.", path);
+                //CliUtils.DisplayMessageWithColor(tempMessage, ConsoleColor.Red);
                 return null;
             }
 
